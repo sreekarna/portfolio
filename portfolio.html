@@ -432,62 +432,33 @@ function setProgress(pct, msg, err) {
 
 // ── Load prices from worker ───────────────────────────────────────
 async function loadPrices() {
-  if (WORKER_URL === 'YOUR_WORKER_URL_HERE') {
-    document.getElementById('setup-banner').style.display = 'block';
-    document.getElementById('last-updated').textContent = 'Showing saved prices · set up worker for live data';
-    renderAll();
-    return;
-  }
-
-  const btn = document.getElementById('refresh-btn');
-  btn.disabled = true;
-  btn.textContent = 'Fetching…';
-  document.getElementById('progress-section').classList.add('visible');
-  document.getElementById('error-banner').classList.remove('visible');
-
   try {
-    setProgress(20, 'Calling price server…');
-    const res  = await fetch(WORKER_URL);
-    setProgress(70, 'Processing prices…');
-
-    if (!res.ok) throw new Error('Worker returned ' + res.status);
+    const res = await fetch('https://portfolio-prices.karnasdk.workers.dev');
     const data = await res.json();
 
     if (data.prices) {
-      Object.entries(data.prices).forEach(([k, v]) => { if (v > 0) PRICES[k] = v; });
+      Object.entries(data.prices).forEach(([k, v]) => {
+        if (v > 0) PRICES[k] = v;
+      });
     }
+
     if (data.fx) {
-      if (data.fx.EUR_USD > 0) FX.EUR_USD = data.fx.EUR_USD;
-      if (data.fx.GBP_USD > 0) FX.GBP_USD = data.fx.GBP_USD;
-      if (data.fx.INR_USD > 0) FX.INR_USD = data.fx.INR_USD;
-      if (data.fx.AED_USD > 0) FX.AED_USD = data.fx.AED_USD;
+      if (data.fx.EUR_USD) FX.EUR_USD = data.fx.EUR_USD;
+      if (data.fx.GBP_USD) FX.GBP_USD = data.fx.GBP_USD;
+      if (data.fx.INR_USD) FX.INR_USD = data.fx.INR_USD;
+      if (data.fx.AED_USD) FX.AED_USD = data.fx.AED_USD;
     }
 
-    setProgress(100, 'All prices updated ✓');
-
-    const now = new Date().toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short' });
+    const now = new Date().toLocaleString();
     document.getElementById('last-updated').textContent =
-      'Live prices · Updated ' + now +
-      ' · EUR/USD ' + FX.EUR_USD.toFixed(4) +
-      ' · GBP/USD ' + FX.GBP_USD.toFixed(4) +
-      ' · INR/USD ' + FX.INR_USD.toFixed(5) +
-      ' · Source: ' + (data.source || 'worker');
-
-    document.getElementById('us-note').textContent     = 'Live prices via Cloudflare Worker · ' + now;
-    document.getElementById('crypto-note').textContent = 'Live price via CoinGecko · ' + now;
-    document.getElementById('india-note').textContent  = 'Fund values from broker · INR/USD ' + FX.INR_USD.toFixed(5);
+      'Live prices · Updated ' + now;
 
   } catch (err) {
-    setProgress(100, 'Could not fetch — showing last known prices', true);
-    document.getElementById('error-banner').classList.add('visible');
-    document.getElementById('last-updated').textContent = 'Showing last known prices · refresh to retry';
+    document.getElementById('last-updated').textContent =
+      'Could not fetch live prices';
   }
 
   renderAll();
-  setTimeout(() => document.getElementById('progress-section').classList.remove('visible'), 2500);
-
-  btn.disabled = false;
-  btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg> Refresh prices`;
 }
 
 loadPrices();
