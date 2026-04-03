@@ -454,6 +454,8 @@ function setProgress(pct, msg, err) {
 // ── Load prices from worker ───────────────────────────────────────
 async function loadPrices() {
   try {
+    document.getElementById('last-updated').textContent = 'Fetching live prices...';
+
     const res = await fetch('https://portfolio-prices.karnasdk.workers.dev');
     const data = await res.json();
 
@@ -479,7 +481,7 @@ async function loadPrices() {
       'Could not fetch live prices';
   }
 
-  renderAll();
+  renderAll();   // ← VERY IMPORTANT
 }
 
 loadPrices();
