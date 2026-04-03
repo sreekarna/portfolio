@@ -337,23 +337,45 @@ function setMetric(id, val, pos, grand) {
 
 // ── Row builders ──────────────────────────────────────────────────
 function buildStockRow(h) {
-  const fxTag    = h.currency ? `<span class="fx-tag">${h.currency}→USD</span>` : '';
+  const rawPrice = PRICES[h.ticker] || h.avgCost;
+
   const avgUSD   = toUSD(h.avgCost, h.currency);
-  const priceUSD = toUSD(PRICES[h.ticker] || h.avgCost, h.currency);
+  const priceUSD = toUSD(rawPrice, h.currency);
+
+  let avgDisplay;
+  let priceDisplay;
+
+  // Show local currency for non-USD assets
+  if (h.currency === 'AED') {
+    avgDisplay = h.avgCost.toFixed(2) + ' AED';
+    priceDisplay = rawPrice.toFixed(2) + ' AED';
+  } else if (h.currency === 'EUR') {
+    avgDisplay = h.avgCost.toFixed(2) + ' EUR';
+    priceDisplay = rawPrice.toFixed(2) + ' EUR';
+  } else if (h.currency === 'GBP') {
+    avgDisplay = h.avgCost.toFixed(2) + ' GBP';
+    priceDisplay = rawPrice.toFixed(2) + ' GBP';
+  } else {
+    avgDisplay = fmtP(avgUSD);
+    priceDisplay = fmtP(priceUSD);
+  }
+
   const qty      = h.invested / avgUSD;
   const current  = qty * priceUSD;
   const pl       = current - h.invested;
   const plPct    = (pl / h.invested) * 100;
   const pos      = pl >= 0;
+
   return `<tr>
-    <td><div class="r-name">${h.name}${fxTag}</div><div class="r-sub">${h.ticker}</div></td>
+    <td><div class="r-name">${h.name}</div><div class="r-sub">${h.ticker}</div></td>
     <td class="price-cell">${fmtW(h.invested)}</td>
-    <td class="price-cell">${fmtP(avgUSD)}</td>
-    <td class="price-cell">${fmtP(priceUSD)}</td>
+    <td class="price-cell">${avgDisplay}</td>
+    <td class="price-cell">${priceDisplay}</td>
     <td class="price-cell">${fmtW(current)}</td>
     <td><span class="badge ${pos?'pos':'neg'}">${fmtPL(pl)}</span></td>
     <td><span class="badge ${pos?'pos':'neg'}">${fmtPct(plPct)}</span></td>
   </tr>`;
+}
 }
 
 function buildIndiaRow(f) {
