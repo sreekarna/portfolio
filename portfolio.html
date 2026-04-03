@@ -133,7 +133,7 @@
     <h3>One-time setup required</h3>
     <p>
       To enable live prices, open <code>portfolio.html</code> in a text editor, find the line that says<br>
-      <code>const WORKER_URL = 'YOUR_WORKER_URL_HERE';</code><br>
+      <code>const WORKER_URL = 'https://portfolio-prices.karnasdk.workers.dev/';</code><br>
       and replace it with the URL you get after deploying <code>worker.js</code> to Cloudflare Workers.<br>
       See the setup instructions document for full steps.
     </p>
@@ -280,7 +280,7 @@
 // after completing the setup steps in the instructions document.
 // Example: 'https://portfolio-prices.yourname.workers.dev'
 // ─────────────────────────────────────────────────────────────────
-const WORKER_URL = 'YOUR_WORKER_URL_HERE';
+const WORKER_URL = 'https://portfolio-prices.karnasdk.workers.dev/';
 
 // ── Fallback prices (Apr 2, 2026) used if worker not yet set up ──
 let PRICES = {
@@ -530,7 +530,7 @@ function setProgress(pct, msg, err) {
 
 // ── Load prices from worker ───────────────────────────────────────
 async function loadPrices() {
-  if (WORKER_URL === 'YOUR_WORKER_URL_HERE') {
+  if (false) {
     document.getElementById('setup-banner').style.display = 'block';
     document.getElementById('last-updated').textContent = 'Showing saved prices · set up worker for live data';
     renderAll();
