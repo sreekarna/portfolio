@@ -324,14 +324,17 @@ const UAE_STOCKS = [
   { name: 'Abu Dhabi Commercial Bank', ticker: 'ADCB', invested: 5000,  avgCost: 12,  currency: 'AED' },
 ];
 const INDIA_FUNDS = [
-  { name: 'Kotak Flexicap Fund Growth',       category: 'Flexicap',  bookINR: 2630632, valueINR: 2963955 },
-  { name: 'HDFC Nifty 50 Index Fund Regu',    category: 'Index',     bookINR: 4599770, valueINR: 4980635 },
-  { name: 'HSBC Nifty 50 Index Fd (L&T Ni)', category: 'Index',     bookINR: 999950,  valueINR: 1159189 },
-  { name: 'ICICI Prudential Nifty Next 50',   category: 'Index',     bookINR: 5297735, valueINR: 5841394 },
-  { name: 'Nippon Large Cap Fund Growth',     category: 'Large Cap', bookINR: 2073896, valueINR: 2398817 },
-  { name: 'HDFC Small Cap Fund Regular Gr',  category: 'Small Cap', bookINR: 2324884, valueINR: 2308280 },
-  { name: 'Kotak Small Cap Fund Growth',      category: 'Small Cap', bookINR: 2249888, valueINR: 2119604 },
+  { name: 'Kotak Flexicap Fund Growth',       category: 'Flexicap',  bookINR: 2630632, valueINR: 2963955, mfKey: 'KOTAK_FLEXICAP',    _units: 34132  },
+  { name: 'HDFC Nifty 50 Index Fund Regu',    category: 'Index',     bookINR: 4599770, valueINR: 4980635, mfKey: 'HDFC_NIFTY50',       _units: 22941  },
+  { name: 'HSBC Nifty 50 Index Fd (L&T Ni)', category: 'Index',     bookINR: 999950,  valueINR: 1159189, mfKey: 'HSBC_NIFTY50',       _units: 6700   },
+  { name: 'ICICI Prudential Nifty Next 50',   category: 'Index',     bookINR: 5297735, valueINR: 5841394, mfKey: 'ICICI_NIFTYNEXT50',  _units: 51239  },
+  { name: 'Nippon Large Cap Fund Growth',     category: 'Large Cap', bookINR: 2073896, valueINR: 2398817, mfKey: 'NIPPON_LARGECAP',    _units: 26066  },
+  { name: 'HDFC Small Cap Fund Regular Gr',  category: 'Small Cap', bookINR: 2324884, valueINR: 2308280, mfKey: 'HDFC_SMALLCAP',      _units: 16565  },
+  { name: 'Kotak Small Cap Fund Growth',      category: 'Small Cap', bookINR: 2249888, valueINR: 2119604, mfKey: 'KOTAK_SMALLCAP',     _units: 9393   },
 ];
+
+// Live NAVs from worker (updated on refresh)
+let MF_NAVS = {};
 const CRYPTO = [
   { name: 'Bitcoin', ticker: 'BTC', invested: 500000, avgCost: 69000 },
 ];
@@ -404,20 +407,34 @@ function buildStockRow(h) {
   </tr>`;
 }
 
+function getLiveValueINR(f) {
+  if (MF_NAVS[f.mfKey] && f.bookINR > 0) {
+    // units held = bookCost / avgNAV; avgNAV estimated as bookINR/units
+    // simpler: scale valueINR proportionally to NAV change
+    const unitsHeld = f.valueINR / (f.valueINR / f.bookINR > 0 ? (f.valueINR / f.bookINR) * (f.bookINR / f.valueINR) * f.valueINR / f.valueINR : 1);
+    // Best approach: we stored valueINR as market value, so units = valueINR / lastKnownNAV
+    // We don't have lastKnownNAV stored, so use ratio scaling from known data point
+    return f.valueINR * (MF_NAVS[f.mfKey] / f._lastNav);
+  }
+  return f.valueINR;
+}
+
 function buildIndiaRow(f) {
-  const bookUSD = f.bookINR  * FX.INR_USD;
-  const currUSD = f.valueINR * FX.INR_USD;
+  const liveINR = (MF_NAVS[f.mfKey] && f._units) ? MF_NAVS[f.mfKey] * f._units : f.valueINR;
+  const bookUSD = f.bookINR * FX.INR_USD;
+  const currUSD = liveINR  * FX.INR_USD;
   const pl      = currUSD - bookUSD;
   const plPct   = (pl / bookUSD) * 100;
   const pos     = pl >= 0;
+  const navTag  = MF_NAVS[f.mfKey] ? ` · NAV ₹${MF_NAVS[f.mfKey].toFixed(2)}` : '';
   return `<tr>
-    <td><div class="r-name">${f.name}</div><div class="r-sub"><span class="cat-tag">${f.category}</span></div></td>
+    <td><div class="r-name">${f.name}</div><div class="r-sub"><span class="cat-tag">${f.category}</span>${navTag}</div></td>
     <td class="price-cell">${fmtINR(f.bookINR)}</td>
     <td class="price-cell">${fmtW(bookUSD)}</td>
-    <td class="price-cell">${fmtINR(f.valueINR)}</td>
+    <td class="price-cell">${fmtINR(Math.round(liveINR))}</td>
     <td class="price-cell">${fmtW(currUSD)}</td>
-    <td><span class="badge ${pos?'pos':'neg'}">${fmtPL(pl)}</span></td>
-    <td><span class="badge ${pos?'pos':'neg'}">${fmtPct(plPct)}</span></td>
+    <td><span class="badge ${pos ? 'pos' : 'neg'}">${fmtPL(pl)}</span></td>
+    <td><span class="badge ${pos ? 'pos' : 'neg'}">${fmtPct(plPct)}</span></td>
   </tr>`;
 }
 
@@ -454,7 +471,7 @@ function calcHdfc() {
 function calcSection(holdings, isIndia) {
   if (isIndia) {
     let inv = 0, cur = 0;
-    INDIA_FUNDS.forEach(f => { inv += f.bookINR * FX.INR_USD; cur += f.valueINR * FX.INR_USD; });
+    INDIA_FUNDS.forEach(f => { inv += f.bookINR * FX.INR_USD; cur += ((MF_NAVS[f.mfKey] && f._units) ? MF_NAVS[f.mfKey] * f._units : f.valueINR) * FX.INR_USD; });
     return { inv, cur, pl: cur - inv, pct: (cur - inv) / inv * 100 };
   }
   let inv = 0, cur = 0;
@@ -556,7 +573,7 @@ async function loadPrices() {
 
     document.getElementById('us-note').textContent     = 'Live prices via Cloudflare Worker · ' + now;
     document.getElementById('crypto-note').textContent = 'Live price via CoinGecko · ' + now;
-    document.getElementById('india-note').textContent  = 'Fund values from broker · INR/USD ' + FX.INR_USD.toFixed(5);
+    const mfCount = Object.keys(MF_NAVS).length; document.getElementById('india-note').textContent = (mfCount > 0 ? 'Live NAVs via mfapi.in · ' + mfCount + '/7 funds updated · ' : 'Broker values (static) · ') + 'INR/USD ' + FX.INR_USD.toFixed(5) + ' · ' + now;
 
   } catch (err) {
     setProgress(100, 'Could not fetch — showing last known prices', true);
