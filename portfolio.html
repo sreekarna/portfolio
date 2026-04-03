@@ -133,7 +133,7 @@
     <h3>One-time setup required</h3>
     <p>
       To enable live prices, open <code>portfolio.html</code> in a text editor, find the line that says<br>
-      <code>const WORKER_URL = 'https://portfolio-prices.karnasdk.workers.dev/';</code><br>
+      <code>const WORKER_URL = 'YOUR_WORKER_URL_HERE';</code><br>
       and replace it with the URL you get after deploying <code>worker.js</code> to Cloudflare Workers.<br>
       See the setup instructions document for full steps.
     </p>
@@ -228,6 +228,29 @@
 
   <hr class="divider"><br>
 
+  <!-- India HDFC Demat -->
+  <div class="section">
+    <div class="section-header">
+      <h2>India — HDFC Demat Holdings</h2>
+      <span class="s-badge india" id="hdfc-count"></span>
+    </div>
+    <div class="sec-summary">
+      <div class="sum-card"><div class="s-label">Invested</div><div class="s-value" id="hdfc-invested">—</div></div>
+      <div class="sum-card"><div class="s-label">Current Value</div><div class="s-value" id="hdfc-value">—</div></div>
+      <div class="sum-card"><div class="s-label">P / L ($)</div><div class="s-value" id="hdfc-pl">—</div></div>
+      <div class="sum-card"><div class="s-label">Return</div><div class="s-value" id="hdfc-pct">—</div></div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Stock / ETF</th><th>Qty</th><th>Avg Cost (₹)</th><th>Current Price (₹)</th><th>Invested (₹)</th><th>Current Value (₹)</th><th>P / L ($)</th><th>P / L (%)</th></tr></thead>
+        <tbody id="hdfc-tbody"></tbody>
+      </table>
+      <div class="table-footer"><span class="table-note" id="hdfc-note">Prices from HDFC demat statement · Apr 2, 2026 · avg cost based on purchase dates Feb 12 & 20, 2026</span></div>
+    </div>
+  </div>
+
+  <hr class="divider"><br>
+
   <!-- Crypto -->
   <div class="section">
     <div class="section-header">
@@ -257,7 +280,7 @@
 // after completing the setup steps in the instructions document.
 // Example: 'https://portfolio-prices.yourname.workers.dev'
 // ─────────────────────────────────────────────────────────────────
-const WORKER_URL = 'https://portfolio-prices.karnasdk.workers.dev/';
+const WORKER_URL = 'YOUR_WORKER_URL_HERE';
 
 // ── Fallback prices (Apr 2, 2026) used if worker not yet set up ──
 let PRICES = {
@@ -311,6 +334,23 @@ const INDIA_FUNDS = [
 ];
 const CRYPTO = [
   { name: 'Bitcoin', ticker: 'BTC', invested: 500000, avgCost: 69000 },
+];
+
+// u2500u2500 HDFC Demat Holdings (India) u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500u2500
+const HDFC_HOLDINGS = [
+  { name: 'ABB India Limited',               type: 'Equity', qty: 18,    avgCost: 6231,  currentPrice: 6149.95 },
+  { name: 'Asian Paints Limited',            type: 'Equity', qty: 42,    avgCost: 2400,  currentPrice: 2171.70 },
+  { name: 'Central Depository Services',     type: 'Equity', qty: 76,    avgCost: 1200,  currentPrice: 1186.30 },
+  { name: 'CG Power & Industrial Solutions', type: 'Equity', qty: 145,   avgCost: 680,   currentPrice: 680.80  },
+  { name: 'Hindustan Aeronautics (HAL)',      type: 'Equity', qty: 25,    avgCost: 3700,  currentPrice: 3686.95 },
+  { name: 'ICICI Pru Nifty Oil & Gas ETF',   type: 'ETF',    qty: 80040, avgCost: 12.00, currentPrice: 11.00   },
+  { name: 'ICICI Pru Nifty FMCG ETF',        type: 'ETF',    qty: 17900, avgCost: 49.00, currentPrice: 49.48   },
+  { name: 'IRCTC',                           type: 'Equity', qty: 161,   avgCost: 513,   currentPrice: 513.00  },
+  { name: 'Jio Financial Services',          type: 'Equity', qty: 400,   avgCost: 260,   currentPrice: 229.55  },
+  { name: 'Moschip Technologies',            type: 'Equity', qty: 530,   avgCost: 175,   currentPrice: 166.45  },
+  { name: 'Motilal Oswal Nifty Realty ETF',  type: 'ETF',    qty: 11720, avgCost: 68,    currentPrice: 67.31   },
+  { name: 'Nippon India ETF Nifty IT',        type: 'ETF',    qty: 25750, avgCost: 33.50, currentPrice: 33.54   },
+  { name: 'Waaree Energies Limited',         type: 'Equity', qty: 36,    avgCost: 3177,  currentPrice: 3065.00 },
 ];
 
 // ── Helpers ───────────────────────────────────────────────────────
@@ -381,6 +421,36 @@ function buildIndiaRow(f) {
   </tr>`;
 }
 
+function buildHdfcRow(h) {
+  const investedINR = h.qty * h.avgCost;
+  const currentINR  = h.qty * h.currentPrice;
+  const investedUSD = investedINR * FX.INR_USD;
+  const currentUSD  = currentINR  * FX.INR_USD;
+  const pl    = currentUSD - investedUSD;
+  const plPct = (pl / investedUSD) * 100;
+  const pos   = pl >= 0;
+  const typeTag = h.type === "ETF" ? '<span class="cat-tag">ETF</span>' : '';
+  return `<tr>
+    <td><div class="r-name">${h.name}</div><div class="r-sub">${typeTag}</div></td>
+    <td class="price-cell">${h.qty.toLocaleString("en-IN")}</td>
+    <td class="price-cell">${fmtINR(h.avgCost)}</td>
+    <td class="price-cell">${fmtINR(h.currentPrice)}</td>
+    <td class="price-cell">${fmtINR(investedINR)}</td>
+    <td class="price-cell">${fmtINR(currentINR)}</td>
+    <td><span class="badge ${pos?"pos":"neg"}">${fmtPL(pl)}</span></td>
+    <td><span class="badge ${pos?"pos":"neg"}">${fmtPct(plPct)}</span></td>
+  </tr>`;
+}
+
+function calcHdfc() {
+  let inv = 0, cur = 0;
+  HDFC_HOLDINGS.forEach(h => {
+    inv += h.qty * h.avgCost  * FX.INR_USD;
+    cur += h.qty * h.currentPrice * FX.INR_USD;
+  });
+  return { inv, cur, pl: cur - inv, pct: (cur - inv) / inv * 100 };
+}
+
 function calcSection(holdings, isIndia) {
   if (isIndia) {
     let inv = 0, cur = 0;
@@ -402,26 +472,29 @@ function renderAll() {
   const s   = calcSection(US_STOCKS);
   const u   = calcSection(UAE_STOCKS);
   const ind = calcSection(null, true);
+  const hdfc = calcHdfc();
   const c   = calcSection(CRYPTO);
 
   document.getElementById('us-tbody').innerHTML    = US_STOCKS.map(buildStockRow).join('');
   document.getElementById('uae-tbody').innerHTML   = UAE_STOCKS.map(buildStockRow).join('');
   document.getElementById('india-tbody').innerHTML = INDIA_FUNDS.map(buildIndiaRow).join('');
+  document.getElementById('hdfc-tbody').innerHTML = HDFC_HOLDINGS.map(buildHdfcRow).join('');
   document.getElementById('crypto-tbody').innerHTML = CRYPTO.map(buildStockRow).join('');
 
   document.getElementById('us-count').textContent  = US_STOCKS.length + ' holdings';
   document.getElementById('uae-count').textContent = UAE_STOCKS.length + ' holdings';
   document.getElementById('india-count').textContent = INDIA_FUNDS.length + ' funds';
+  document.getElementById('hdfc-count').textContent = HDFC_HOLDINGS.length + ' holdings';
 
-  [['s', s], ['uae', u], ['india', ind], ['c', c]].forEach(([id, sec]) => {
+  [['s', s], ['uae', u], ['india', ind], ['hdfc', hdfc], ['c', c]].forEach(([id, sec]) => {
     setMetric(id + '-invested', fmtW(sec.inv));
     setMetric(id + '-value',    fmtW(sec.cur));
     setMetric(id + '-pl',       fmtPL(sec.pl),   sec.pl  >= 0);
     setMetric(id + '-pct',      fmtPct(sec.pct), sec.pct >= 0);
   });
 
-  const gI  = s.inv + u.inv + ind.inv + c.inv;
-  const gC  = s.cur + u.cur + ind.cur + c.cur;
+  const gI  = s.inv + u.inv + ind.inv + hdfc.inv + c.inv;
+  const gC  = s.cur + u.cur + ind.cur + hdfc.cur + c.cur;
   const gPL = gC - gI, gPct = (gPL / gI) * 100;
   setMetric('grand-invested', fmtW(gI),         undefined,    true);
   setMetric('grand-value',    fmtW(gC),          undefined,    true);
@@ -440,7 +513,7 @@ function setProgress(pct, msg, err) {
 
 // ── Load prices from worker ───────────────────────────────────────
 async function loadPrices() {
-  if (false) {
+  if (WORKER_URL === 'YOUR_WORKER_URL_HERE') {
     document.getElementById('setup-banner').style.display = 'block';
     document.getElementById('last-updated').textContent = 'Showing saved prices · set up worker for live data';
     renderAll();
