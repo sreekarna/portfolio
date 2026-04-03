@@ -221,7 +221,7 @@ const HDFC_HOLDINGS=[
 const CRYPTO=[{name:'Bitcoin',ticker:'BTC',invested:500000,avgCost:69000}];
 
 function fmtW(n){return '$'+Math.round(n).toLocaleString('en-US');}
-function fmtINR(n){return '₹'+Math.round(n).toLocaleString('en-IN');}
+function fmtINR(n){return '₹'+Math.round(n).toLocaleString('en-IN');}function fmtINR2(n){return '₹'+n.toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2});}
 function fmtP(n){return '$'+n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');}
 function fmtPct(n){return(n>=0?'+':'')+n.toFixed(2)+'%';}
 function fmtPL(n){return(n>=0?'+$':'-$')+Math.round(Math.abs(n)).toLocaleString('en-US');}
