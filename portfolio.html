@@ -429,7 +429,7 @@ function buildHdfcRow(h) {
   const pl    = currentUSD - investedUSD;
   const plPct = (pl / investedUSD) * 100;
   const pos   = pl >= 0;
-  const typeTag = h.type === "ETF" ? '<span class="cat-tag">ETF</span>' : '';
+  const typeTag = h.type === 'ETF' ? '<span class="cat-tag">ETF</span>' : '';
   return `<tr>
     <td><div class="r-name">${h.name}</div><div class="r-sub">${typeTag}</div></td>
     <td class="price-cell">${h.qty.toLocaleString("en-IN")}</td>
@@ -437,8 +437,8 @@ function buildHdfcRow(h) {
     <td class="price-cell">${fmtINR(h.currentPrice)}</td>
     <td class="price-cell">${fmtINR(investedINR)}</td>
     <td class="price-cell">${fmtINR(currentINR)}</td>
-    <td><span class="badge ${pos?"pos":"neg"}">${fmtPL(pl)}</span></td>
-    <td><span class="badge ${pos?"pos":"neg"}">${fmtPct(plPct)}</span></td>
+    <td><span class="badge ${pos ? "pos" : "neg"}">${fmtPL(pl)}</span></td>
+    <td><span class="badge ${pos ? "pos" : "neg"}">${fmtPct(plPct)}</span></td>
   </tr>`;
 }
 
