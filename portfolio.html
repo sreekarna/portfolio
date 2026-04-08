@@ -312,6 +312,8 @@ async function loadPrices(){
     if(!res.ok)throw new Error('Worker error '+res.status);
     const data=await res.json();
     if(data.prices)Object.entries(data.prices).forEach(([k,v])=>{if(v>0)PRICES[k]=v;});
+    // UAE direct browser fetch (Yahoo Finance from user's IP, not geo-blocked like Cloudflare Workers)
+    try{const ucr=await fetch('https://query2.finance.yahoo.com/v1/test/getcrumb',{credentials:'include'});const ucrumb=(await ucr.text()).trim();if(ucrumb&&!ucrumb.startsWith('<')&&ucrumb.length<100){const usyms=encodeURIComponent('EMAAR.DU,ENBD.DU,FAB.AD,ADIB.AD,ADCB.AD');const ures=await fetch('https://query1.finance.yahoo.com/v7/finance/quote?symbols='+usyms+'&crumb='+encodeURIComponent(ucrumb),{credentials:'include'});const ud=await ures.json();const um={'EMAAR.DU':'EMAR','ENBD.DU':'ENBD','FAB.AD':'FAB','ADIB.AD':'ADIB','ADCB.AD':'ADCB'};for(const ui of(ud?.quoteResponse?.result||[])){const uk=um[ui.symbol];if(uk&&ui.regularMarketPrice>0)PRICES[uk]=ui.regularMarketPrice;}}}catch(ue){}
     if(data.fx){if(data.fx.EUR_USD>0)FX.EUR_USD=data.fx.EUR_USD;if(data.fx.GBP_USD>0)FX.GBP_USD=data.fx.GBP_USD;if(data.fx.INR_USD>0)FX.INR_USD=data.fx.INR_USD;if(data.fx.AED_USD>0)FX.AED_USD=data.fx.AED_USD;}
     if(data.mf_navs)Object.entries(data.mf_navs).forEach(([k,v])=>{if(v>0)MF_NAVS[k]=v;});
     if(data.india_stocks)Object.entries(data.india_stocks).forEach(([k,v])=>{if(v>0)INDIA_STOCK_PRICES[k]=v;});
