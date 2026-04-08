@@ -161,7 +161,7 @@
 </div>
 <script>
 const WORKER_URL='https://portfolio-prices.karnasdk.workers.dev/';
-let PRICES={RMS:1659,ASML:1320.83,MELI:1719,UBER:73.84,HOOD:69.30,MSFT:356.90,NVDA:182.65,RDDT:141.80,PLTR:156.43,SHOP:133.50,AMZN:213.49,META:600.05,NFLX:91.87,NU:14.64,BLK:930.88,FICO:1062,MSTR:119.13,COIN:175.76,TSLA:393.09,R2US:54.39,EMAR:11.70,ENBD:26.90,FAB:18.20,ADIB:21.0,ADCB:12.68,BTC:68500};
+let PRICES={RMS:1659,ASML:1320.83,MELI:1719,UBER:73.84,HOOD:69.30,MSFT:356.90,NVDA:182.65,RDDT:141.80,PLTR:156.43,SHOP:133.50,AMZN:213.49,META:600.05,NFLX:91.87,NU:14.64,BLK:930.88,FICO:1062,MSTR:119.13,COIN:175.76,TSLA:393.09,R2US:54.39,EMAR:11.70,ENBD:26.90,FAB:18.20,ADIB:21.0,ADCB:12.68,BTC:68500,SHIB:0.000012046,SUI:3.354,ADA:0.8268,AVAX:24.931,DOGE:0.2226,LTC:111.61};
 let FX={EUR_USD:1.153,GBP_USD:1.3205,INR_USD:0.01075,AED_USD:1/3.6725};
 let MF_NAVS={};
 let INDIA_STOCK_PRICES={};
@@ -218,7 +218,7 @@ const HDFC_HOLDINGS=[
   {name:'Nippon India ETF Nifty IT (ITBEES)',type:'ETF',qty:25750,avgCost:39.17,currentPrice:34.75,stockKey:'NIPPON_IT_ETF'},
   {name:'Waaree Energies Limited',type:'Equity',qty:36,avgCost:2897.29,currentPrice:3129.80,stockKey:'WAAREE'},
 ];
-const CRYPTO=[{name:'Bitcoin',ticker:'BTC',invested:500000,avgCost:69000}];
+const CRYPTO=[{name:'Bitcoin',ticker:'BTC',invested:500000,avgCost:69000},{name:'Shiba Inu',ticker:'SHIB',invested:4424,avgCost:0.000012046},{name:'Sui',ticker:'SUI',invested:18894,avgCost:3.354},{name:'Cardano',ticker:'ADA',invested:22290,avgCost:0.8268},{name:'Avalanche',ticker:'AVAX',invested:19693,avgCost:24.931},{name:'Dogecoin',ticker:'DOGE',invested:20791,avgCost:0.2226},{name:'Litecoin',ticker:'LTC',invested:21346,avgCost:111.61}];
 
 function fmtW(n){return '$'+Math.round(n).toLocaleString('en-US');}
 function fmtINR(n){return '₹'+Math.round(n).toLocaleString('en-IN');}function fmtINR2(n){return '₹'+n.toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2});}
