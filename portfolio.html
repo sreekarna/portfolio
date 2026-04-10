@@ -70,7 +70,7 @@
 <header class="site-header">
   <div class="header-left">
     <h1>My <span>Investment</span> Portfolio</h1>
-    <div class="subtitle" id="last-updated">Loading live pricesâ¦</div>
+    <div class="subtitle" id="last-updated">Loading live prices…</div>
   </div>
   <button class="refresh-btn" id="refresh-btn" onclick="loadPrices()">
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
@@ -79,83 +79,83 @@
 </header>
 <div class="main">
   <div class="progress-section" id="progress-section">
-    <div class="progress-label"><span id="progress-msg">Fetching live pricesâ¦</span><span id="progress-pct">0%</span></div>
+    <div class="progress-label"><span id="progress-msg">Fetching live prices…</span><span id="progress-pct">0%</span></div>
     <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
   </div>
   <div class="error-banner" id="error-banner">Could not fetch live prices. Showing last known values.</div>
   <div class="grand-grid">
-    <div class="grand-card"><div class="g-label">Total Invested</div><div class="g-value" id="grand-invested">â</div></div>
-    <div class="grand-card"><div class="g-label">Value (â¹)</div><div class="g-value" id="grand-value">â</div></div>
-    <div class="grand-card"><div class="g-label">Total P / L ($)</div><div class="g-value" id="grand-pl">â</div></div>
-    <div class="grand-card"><div class="g-label">Overall Return</div><div class="g-value" id="grand-pct">â</div></div>
+    <div class="grand-card"><div class="g-label">Total Invested</div><div class="g-value" id="grand-invested">—</div></div>
+    <div class="grand-card"><div class="g-label">Value (₹)</div><div class="g-value" id="grand-value">—</div></div>
+    <div class="grand-card"><div class="g-label">Total P / L ($)</div><div class="g-value" id="grand-pl">—</div></div>
+    <div class="grand-card"><div class="g-label">Overall Return</div><div class="g-value" id="grand-pct">—</div></div>
   </div>
   <div class="section">
     <div class="section-header"><h2>US &amp; International Stocks</h2><span class="s-badge" id="us-count"></span></div>
     <div class="sec-summary">
-      <div class="sum-card"><div class="s-label">Invested (â¹)</div><div class="s-value" id="s-invested">â</div></div>
-      <div class="sum-card"><div class="s-label">Value (â¹)</div><div class="s-value" id="s-value">â</div></div>
-      <div class="sum-card"><div class="s-label">P / L ($)</div><div class="s-value" id="s-pl">â</div></div>
-      <div class="sum-card"><div class="s-label">Return</div><div class="s-value" id="s-pct">â</div></div>
+      <div class="sum-card"><div class="s-label">Invested (₹)</div><div class="s-value" id="s-invested">—</div></div>
+      <div class="sum-card"><div class="s-label">Value (₹)</div><div class="s-value" id="s-value">—</div></div>
+      <div class="sum-card"><div class="s-label">P / L ($)</div><div class="s-value" id="s-pl">—</div></div>
+      <div class="sum-card"><div class="s-label">Return</div><div class="s-value" id="s-pct">—</div></div>
     </div>
     <div class="table-wrap">
-      <table><thead><tr><th>Stock</th><th>Invested (â¹)</th><th>Avg Cost</th><th>Current Price</th><th>Value (â¹)</th><th>P / L ($)</th><th>P / L (%)</th></tr></thead><tbody id="us-tbody"></tbody></table>
-      <div class="table-footer"><span class="table-note" id="us-note">â</span></div>
+      <table><thead><tr><th>Stock</th><th>Invested (₹)</th><th>Avg Cost</th><th>Current Price</th><th>Value (₹)</th><th>P / L ($)</th><th>P / L (%)</th></tr></thead><tbody id="us-tbody"></tbody></table>
+      <div class="table-footer"><span class="table-note" id="us-note">—</span></div>
     </div>
   </div>
   <hr class="divider"><br>
   <div class="section">
     <div class="section-header"><h2>UAE Stocks</h2><span class="s-badge uae" id="uae-count"></span></div>
     <div class="sec-summary">
-      <div class="sum-card"><div class="s-label">Invested (â¹)</div><div class="s-value" id="uae-invested">â</div></div>
-      <div class="sum-card"><div class="s-label">Value (â¹)</div><div class="s-value" id="uae-value">â</div></div>
-      <div class="sum-card"><div class="s-label">P / L ($)</div><div class="s-value" id="uae-pl">â</div></div>
-      <div class="sum-card"><div class="s-label">Return</div><div class="s-value" id="uae-pct">â</div></div>
+      <div class="sum-card"><div class="s-label">Invested (₹)</div><div class="s-value" id="uae-invested">—</div></div>
+      <div class="sum-card"><div class="s-label">Value (₹)</div><div class="s-value" id="uae-value">—</div></div>
+      <div class="sum-card"><div class="s-label">P / L ($)</div><div class="s-value" id="uae-pl">—</div></div>
+      <div class="sum-card"><div class="s-label">Return</div><div class="s-value" id="uae-pct">—</div></div>
     </div>
     <div class="table-wrap">
-      <table><thead><tr><th>Stock</th><th>Invested (â¹)</th><th>Avg Cost (AED)</th><th>Current Price (AED)</th><th>Current Value ($)</th><th>P / L ($)</th><th>P / L (%)</th></tr></thead><tbody id="uae-tbody"></tbody></table>
-      <div class="table-footer"><span class="table-note">Prices in AED Â· converted at live rate</span></div>
+      <table><thead><tr><th>Stock</th><th>Invested (₹)</th><th>Avg Cost (AED)</th><th>Current Price (AED)</th><th>Current Value ($)</th><th>P / L ($)</th><th>P / L (%)</th></tr></thead><tbody id="uae-tbody"></tbody></table>
+      <div class="table-footer"><span class="table-note">Prices in AED · converted at live rate</span></div>
     </div>
   </div>
   <hr class="divider"><br>
   <div class="section">
-    <div class="section-header"><h2>India â Mutual Funds</h2><span class="s-badge india" id="india-count"></span></div>
+    <div class="section-header"><h2>India — Mutual Funds</h2><span class="s-badge india" id="india-count"></span></div>
     <div class="sec-summary">
-      <div class="sum-card"><div class="s-label">Invested (â¹)</div><div class="s-value" id="india-invested">â</div></div>
-      <div class="sum-card"><div class="s-label">Value (â¹)</div><div class="s-value" id="india-value">â</div></div>
-      <div class="sum-card"><div class="s-label">P / L ($)</div><div class="s-value" id="india-pl">â</div></div>
-      <div class="sum-card"><div class="s-label">Return</div><div class="s-value" id="india-pct">â</div></div>
+      <div class="sum-card"><div class="s-label">Invested (₹)</div><div class="s-value" id="india-invested">—</div></div>
+      <div class="sum-card"><div class="s-label">Value (₹)</div><div class="s-value" id="india-value">—</div></div>
+      <div class="sum-card"><div class="s-label">P / L ($)</div><div class="s-value" id="india-pl">—</div></div>
+      <div class="sum-card"><div class="s-label">Return</div><div class="s-value" id="india-pct">—</div></div>
     </div>
     <div class="table-wrap">
       <table><thead><tr><th>Fund</th><th>Invested (INR)</th><th>Invested ($)</th><th>Current Value (INR)</th><th>Current Value ($)</th><th>P / L ($)</th><th>P / L (%)</th></tr></thead><tbody id="india-tbody"></tbody></table>
-      <div class="table-footer"><span class="table-note" id="india-note">â</span></div>
+      <div class="table-footer"><span class="table-note" id="india-note">—</span></div>
     </div>
   </div>
   <hr class="divider"><br>
   <div class="section">
-    <div class="section-header"><h2>India â HDFC Demat Holdings</h2><span class="s-badge india" id="hdfc-count"></span></div>
+    <div class="section-header"><h2>India — HDFC Demat Holdings</h2><span class="s-badge india" id="hdfc-count"></span></div>
     <div class="sec-summary">
-      <div class="sum-card"><div class="s-label">Invested (â¹)</div><div class="s-value" id="hdfc-invested">â</div></div>
-      <div class="sum-card"><div class="s-label">Value (â¹)</div><div class="s-value" id="hdfc-value">â</div></div>
-      <div class="sum-card"><div class="s-label">P / L (â¹)</div><div class="s-value" id="hdfc-pl">â</div></div>
-      <div class="sum-card"><div class="s-label">Return</div><div class="s-value" id="hdfc-pct">â</div></div>
+      <div class="sum-card"><div class="s-label">Invested (₹)</div><div class="s-value" id="hdfc-invested">—</div></div>
+      <div class="sum-card"><div class="s-label">Value (₹)</div><div class="s-value" id="hdfc-value">—</div></div>
+      <div class="sum-card"><div class="s-label">P / L (₹)</div><div class="s-value" id="hdfc-pl">—</div></div>
+      <div class="sum-card"><div class="s-label">Return</div><div class="s-value" id="hdfc-pct">—</div></div>
     </div>
     <div class="table-wrap">
-      <table><thead><tr><th>Stock / ETF</th><th>Qty</th><th>Avg Cost (â¹)</th><th>Current Price (â¹)</th><th>Invested (â¹)</th><th>Current Value (â¹)</th><th>P / L (â¹)</th><th>P / L (%)</th></tr></thead><tbody id="hdfc-tbody"></tbody></table>
-      <div class="table-footer"><span class="table-note" id="hdfc-note">â</span></div>
+      <table><thead><tr><th>Stock / ETF</th><th>Qty</th><th>Avg Cost (₹)</th><th>Current Price (₹)</th><th>Invested (₹)</th><th>Current Value (₹)</th><th>P / L (₹)</th><th>P / L (%)</th></tr></thead><tbody id="hdfc-tbody"></tbody></table>
+      <div class="table-footer"><span class="table-note" id="hdfc-note">—</span></div>
     </div>
   </div>
   <hr class="divider"><br>
   <div class="section">
     <div class="section-header"><h2>Crypto</h2><span class="s-badge crypto">1 holding</span></div>
     <div class="sec-summary">
-      <div class="sum-card"><div class="s-label">Invested (â¹)</div><div class="s-value" id="c-invested">â</div></div>
-      <div class="sum-card"><div class="s-label">Value (â¹)</div><div class="s-value" id="c-value">â</div></div>
-      <div class="sum-card"><div class="s-label">P / L ($)</div><div class="s-value" id="c-pl">â</div></div>
-      <div class="sum-card"><div class="s-label">Return</div><div class="s-value" id="c-pct">â</div></div>
+      <div class="sum-card"><div class="s-label">Invested (₹)</div><div class="s-value" id="c-invested">—</div></div>
+      <div class="sum-card"><div class="s-label">Value (₹)</div><div class="s-value" id="c-value">—</div></div>
+      <div class="sum-card"><div class="s-label">P / L ($)</div><div class="s-value" id="c-pl">—</div></div>
+      <div class="sum-card"><div class="s-label">Return</div><div class="s-value" id="c-pct">—</div></div>
     </div>
     <div class="table-wrap">
-      <table><thead><tr><th>Coin</th><th>Invested (â¹)</th><th>Avg Cost</th><th>Current Price</th><th>Value (â¹)</th><th>P / L ($)</th><th>P / L (%)</th></tr></thead><tbody id="crypto-tbody"></tbody></table>
-      <div class="table-footer"><span class="table-note" id="crypto-note">â</span></div>
+      <table><thead><tr><th>Coin</th><th>Invested (₹)</th><th>Avg Cost</th><th>Current Price</th><th>Value (₹)</th><th>P / L ($)</th><th>P / L (%)</th></tr></thead><tbody id="crypto-tbody"></tbody></table>
+      <div class="table-footer"><span class="table-note" id="crypto-note">—</span></div>
     </div>
   </div>
 </div>
@@ -221,17 +221,17 @@ const HDFC_HOLDINGS=[
 const CRYPTO=[{name:'Bitcoin',ticker:'BTC',invested:500000,avgCost:69000},{name:'Shiba Inu',ticker:'SHIB',invested:4424,avgCost:0.000012046},{name:'Sui',ticker:'SUI',invested:18894,avgCost:3.354},{name:'Cardano',ticker:'ADA',invested:22290,avgCost:0.8268},{name:'Avalanche',ticker:'AVAX',invested:19693,avgCost:24.931},{name:'Dogecoin',ticker:'DOGE',invested:20791,avgCost:0.2226},{name:'Litecoin',ticker:'LTC',invested:21346,avgCost:111.61}];
 
 function fmtW(n){return '$'+Math.round(n).toLocaleString('en-US');}
-function fmtINR(n){return 'â¹'+Math.round(n).toLocaleString('en-IN');}function fmtINR2(n){return 'â¹'+n.toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function fmtINR(n){return '₹'+Math.round(n).toLocaleString('en-IN');}function fmtINR2(n){return '₹'+n.toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2});}
 function fmtP(n){return '$'+n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');}
 function fmtPct(n){return(n>=0?'+':'')+n.toFixed(2)+'%';}
 function fmtPL(n){return(n>=0?'+$':'-$')+Math.round(Math.abs(n)).toLocaleString('en-US');}
-function fmtPLINR(n){return(n>=0?'+â¹':'-â¹')+Math.round(Math.abs(n)).toLocaleString('en-IN');}
+function fmtPLINR(n){return(n>=0?'+₹':'-₹')+Math.round(Math.abs(n)).toLocaleString('en-IN');}
 function toUSD(price,currency){if(!currency)return price;if(currency==='EUR')return price*FX.EUR_USD;if(currency==='GBP')return price*FX.GBP_USD;if(currency==='AED')return price*FX.AED_USD;return price;}
 function setMetric(id,val,pos,grand){const el=document.getElementById(id);if(!el)return;el.textContent=val;if(pos!==undefined)el.className=(grand?'g-value':'s-value')+' '+(pos?'pos':'neg');}
 
 function buildStockRow(h){
   const isAED=h.currency==='AED';
-  const fxTag=(h.currency&&!isAED)?'<span class="fx-tag">'+h.currency+'âUSD</span>':'';
+  const fxTag=(h.currency&&!isAED)?'<span class="fx-tag">'+h.currency+'→USD</span>':'';
   const avgUSD=toUSD(h.avgCost,h.currency);
   const rawPrice=PRICES[h.ticker]||h.avgCost;
   const priceUSD=toUSD(rawPrice,h.currency);
@@ -252,7 +252,7 @@ function buildIndiaRow(f){
   const pl=currUSD-bookUSD;
   const plPct=(pl/bookUSD)*100;
   const pos=pl>=0;
-  const navTag=MF_NAVS[f.mfKey]?' Â· NAV â¹'+MF_NAVS[f.mfKey].toFixed(2):'';
+  const navTag=MF_NAVS[f.mfKey]?' · NAV ₹'+MF_NAVS[f.mfKey].toFixed(2):'';
   return '<tr><td><div class="r-name">'+f.name+'</div><div class="r-sub"><span class="cat-tag">'+f.category+'</span>'+navTag+'</div></td><td class="price-cell">'+fmtINR(f.bookINR)+'</td><td class="price-cell">'+fmtW(bookUSD)+'</td><td class="price-cell">'+fmtINR(Math.round(liveINR))+'</td><td class="price-cell">'+fmtW(currUSD)+'</td><td><span class="badge '+(pos?'pos':'neg')+'">'+fmtPL(pl)+'</span></td><td><span class="badge '+(pos?'pos':'neg')+'">'+fmtPct(plPct)+'</span></td></tr>';
 }
 
@@ -302,13 +302,13 @@ function setProgress(pct,msg,err){
 
 async function loadPrices(){
   const btn=document.getElementById('refresh-btn');
-  btn.disabled=true;btn.textContent='Fetchingâ¦';
+  btn.disabled=true;btn.textContent='Fetching…';
   document.getElementById('progress-section').classList.add('visible');
   document.getElementById('error-banner').classList.remove('visible');
   try{
-    setProgress(20,'Calling price serverâ¦');
+    setProgress(20,'Calling price server…');
     const res=await fetch(WORKER_URL);
-    setProgress(70,'Processing pricesâ¦');
+    setProgress(70,'Processing prices…');
     if(!res.ok)throw new Error('Worker error '+res.status);
     const data=await res.json();
     if(data.prices)Object.entries(data.prices).forEach(([k,v])=>{if(v>0)PRICES[k]=v;});
@@ -317,17 +317,17 @@ async function loadPrices(){
     if(data.fx){if(data.fx.EUR_USD>0)FX.EUR_USD=data.fx.EUR_USD;if(data.fx.GBP_USD>0)FX.GBP_USD=data.fx.GBP_USD;if(data.fx.INR_USD>0)FX.INR_USD=data.fx.INR_USD;if(data.fx.AED_USD>0)FX.AED_USD=data.fx.AED_USD;}
     if(data.mf_navs)Object.entries(data.mf_navs).forEach(([k,v])=>{if(v>0)MF_NAVS[k]=v;});
     if(data.india_stocks)Object.entries(data.india_stocks).forEach(([k,v])=>{if(v>0)INDIA_STOCK_PRICES[k]=v;});
-    setProgress(100,'All prices updated â');
+    setProgress(100,'All prices updated ✓');
     const now=new Date().toLocaleString('en-GB',{dateStyle:'medium',timeStyle:'short'});
-    document.getElementById('last-updated').textContent='Live prices Â· Updated '+now+' Â· EUR/USD '+FX.EUR_USD.toFixed(4)+' Â· GBP/USD '+FX.GBP_USD.toFixed(4)+' Â· INR/USD '+FX.INR_USD.toFixed(5);
-    document.getElementById('us-note').textContent='Live prices Â· '+now;
-    document.getElementById('crypto-note').textContent='Live price via CoinGecko Â· '+now;
-    document.getElementById('india-note').textContent=(Object.keys(MF_NAVS).length>0?'Live NAVs via mfapi.in Â· ':'Broker values Â· ')+'INR/USD '+FX.INR_USD.toFixed(5);
-    document.getElementById('hdfc-note').textContent=(Object.keys(INDIA_STOCK_PRICES).length>0?'Live prices via NSE Â· ':'Prices as of Apr 4, 2026 Â· ')+now;
+    document.getElementById('last-updated').textContent='Live prices · Updated '+now+' · EUR/USD '+FX.EUR_USD.toFixed(4)+' · GBP/USD '+FX.GBP_USD.toFixed(4)+' · INR/USD '+FX.INR_USD.toFixed(5);
+    document.getElementById('us-note').textContent='Live prices · '+now;
+    document.getElementById('crypto-note').textContent='Live price via CoinGecko · '+now;
+    document.getElementById('india-note').textContent=(Object.keys(MF_NAVS).length>0?'Live NAVs via mfapi.in · ':'Broker values · ')+'INR/USD '+FX.INR_USD.toFixed(5);
+    document.getElementById('hdfc-note').textContent=(Object.keys(INDIA_STOCK_PRICES).length>0?'Live prices via NSE · ':'Prices as of Apr 4, 2026 · ')+now;
   }catch(err){
     setProgress(100,'Could not fetch prices',true);
     document.getElementById('error-banner').classList.add('visible');
-    document.getElementById('last-updated').textContent='Showing last known prices Â· click Refresh to retry';
+    document.getElementById('last-updated').textContent='Showing last known prices · click Refresh to retry';
   }
   renderAll();
   setTimeout(()=>document.getElementById('progress-section').classList.remove('visible'),2500);
