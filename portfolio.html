@@ -1,340 +1,483 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My Investment Portfolio</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<style>
-  :root{--bg:#0f0f11;--surface:#1a1a1f;--surface2:#222228;--border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);--text:#f0f0f2;--muted:#8a8a96;--subtle:#4a4a56;--green:#22c97a;--green-bg:rgba(34,201,122,0.1);--red:#f05050;--red-bg:rgba(240,80,80,0.1);--accent:#7c6cfc;--gold:#e8c96a;--blue:#4a9eff;--blue-bg:rgba(74,158,255,0.1);--orange:#ff7c4a;--orange-bg:rgba(255,124,74,0.1);}
-  *{box-sizing:border-box;margin:0;padding:0;}
-  body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:0 0 60px;}
-  .site-header{padding:36px 40px 28px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:16px;}
-  .header-left h1{font-size:26px;font-weight:600;letter-spacing:-0.5px;}
-  .header-left h1 span{color:var(--accent);}
-  .header-left .subtitle{font-size:12px;color:var(--muted);margin-top:4px;font-family:'DM Mono',monospace;}
-  .refresh-btn{display:inline-flex;align-items:center;gap:7px;background:transparent;color:var(--muted);border:1px solid var(--border2);border-radius:8px;padding:8px 16px;font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:color 0.2s,border-color 0.2s;}
-  .refresh-btn:hover{color:var(--text);border-color:rgba(255,255,255,0.25);}
-  .refresh-btn:disabled{opacity:0.4;pointer-events:none;}
-  .main{padding:28px 40px;max-width:1400px;margin:0 auto;}
-  .progress-section{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px 24px;margin-bottom:24px;display:none;}
-  .progress-section.visible{display:block;}
-  .progress-label{font-size:13px;color:var(--muted);margin-bottom:10px;display:flex;justify-content:space-between;}
-  .progress-label span{font-family:'DM Mono',monospace;font-size:11px;}
-  .progress-track{background:var(--surface2);border-radius:4px;height:4px;overflow:hidden;}
-  .progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--green));border-radius:4px;transition:width 0.5s ease;width:0%;}
-  .progress-fill.error{background:var(--red);}
-  .error-banner{background:rgba(240,80,80,0.1);border:1px solid rgba(240,80,80,0.2);border-radius:10px;padding:13px 18px;font-size:13px;color:var(--red);margin-bottom:20px;display:none;}
-  .error-banner.visible{display:block;}
-  .grand-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:36px;}
-  .grand-card{background:linear-gradient(135deg,#1e1a3a 0%,#1a1a2e 100%);border:1px solid rgba(124,108,252,0.2);border-radius:14px;padding:20px 22px;}
-  .g-label{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.8px;color:var(--muted);margin-bottom:10px;}
-  .g-value{font-size:24px;font-weight:600;letter-spacing:-0.5px;font-family:'DM Mono',monospace;color:var(--text);}
-  .g-value.pos{color:var(--green);}.g-value.neg{color:var(--red);}
-  .section{margin-bottom:44px;}
-  .section-header{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
-  .section-header h2{font-size:17px;font-weight:600;letter-spacing:-0.3px;}
-  .s-badge{font-size:11px;font-weight:500;padding:2px 9px;border-radius:20px;background:var(--surface2);color:var(--muted);border:1px solid var(--border);}
-  .s-badge.uae{background:var(--blue-bg);color:var(--blue);border-color:rgba(74,158,255,0.2);}
-  .s-badge.crypto{background:rgba(232,201,106,0.1);color:var(--gold);border-color:rgba(232,201,106,0.2);}
-  .s-badge.india{background:var(--orange-bg);color:var(--orange);border-color:rgba(255,124,74,0.2);}
-  .sec-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:14px;}
-  .sum-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:13px 15px;}
-  .s-label{font-size:11px;color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:0.6px;}
-  .s-value{font-size:17px;font-weight:600;font-family:'DM Mono',monospace;color:var(--text);}
-  .s-value.pos{color:var(--green);}.s-value.neg{color:var(--red);}
-  .table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;overflow-x:auto;}
-  table{width:100%;border-collapse:collapse;min-width:560px;font-size:13.5px;}
-  thead tr{background:var(--surface2);border-bottom:1px solid var(--border);}
-  th{padding:11px 16px;text-align:left;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.7px;color:var(--subtle);white-space:nowrap;}
-  th:not(:first-child){text-align:right;}
-  td{padding:13px 16px;border-bottom:1px solid var(--border);vertical-align:middle;}
-  td:not(:first-child){text-align:right;}
-  tbody tr:last-child td{border-bottom:none;}
-  tbody tr:hover{background:rgba(255,255,255,0.02);}
-  .r-name{font-weight:500;font-size:13.5px;color:var(--text);}
-  .r-sub{font-size:11px;color:var(--muted);margin-top:2px;font-family:'DM Mono',monospace;}
-  .fx-tag{display:inline-block;font-size:9px;font-weight:600;padding:1px 5px;border-radius:3px;margin-left:5px;letter-spacing:0.4px;vertical-align:middle;background:rgba(124,108,252,0.15);color:var(--accent);border:1px solid rgba(124,108,252,0.25);}
-  .cat-tag{display:inline-block;font-size:9px;font-weight:600;padding:1px 6px;border-radius:3px;margin-top:3px;background:var(--orange-bg);color:var(--orange);border:1px solid rgba(255,124,74,0.2);}
-  .price-cell{font-family:'DM Mono',monospace;font-size:13px;color:var(--text);}
-  .badge{display:inline-block;padding:3px 9px;border-radius:6px;font-size:12px;font-weight:500;font-family:'DM Mono',monospace;white-space:nowrap;}
-  .badge.pos{background:var(--green-bg);color:var(--green);}
-  .badge.neg{background:var(--red-bg);color:var(--red);}
-  .table-footer{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;border-top:1px solid var(--border);background:var(--surface2);flex-wrap:wrap;gap:8px;}
-  .table-note{font-size:11px;color:var(--subtle);font-family:'DM Mono',monospace;}
-  .divider{border:none;border-top:1px solid var(--border);margin:8px 0 0;}
-  @media(max-width:640px){.site-header,.main{padding:20px;}.grand-card .g-value{font-size:19px;}}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Investment Portfolio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --bg: #080c14;
+      --bg2: #0d1421;
+      --glass: rgba(255,255,255,0.04);
+      --glass-border: rgba(255,255,255,0.08);
+      --glass-hover: rgba(255,255,255,0.07);
+      --text: #e2e8f0;
+      --text-2: #94a3b8;
+      --text-3: #475569;
+      --accent: #818cf8;
+      --accent-glow: rgba(129,140,248,0.25);
+      --green: #34d399;
+      --green-glow: rgba(52,211,153,0.15);
+      --green-text: #34d399;
+      --red: #f87171;
+      --red-glow: rgba(248,113,113,0.15);
+      --red-text: #f87171;
+      --gold: #fbbf24;
+      --radius: 14px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 14px;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
+
+    /* Ambient background glow */
+    body::before {
+      content: '';
+      position: fixed;
+      top: -200px; left: -200px;
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(99,102,241,0.08) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      bottom: -200px; right: -200px;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(52,211,153,0.06) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── Header ── */
+    .header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(8,12,20,0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--glass-border);
+      padding: 14px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .header-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-ring {
+      width: 34px; height: 34px;
+      border-radius: 9px;
+      background: linear-gradient(135deg, #6366f1, #a78bfa);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px;
+      box-shadow: 0 0 16px rgba(99,102,241,0.4);
+    }
+
+    .header-title {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: -0.2px;
+      color: var(--text);
+    }
+
+    .header-title span {
+      background: linear-gradient(90deg, #818cf8, #a78bfa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .fx-pill {
+      font-size: 11px;
+      color: var(--text-2);
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      padding: 5px 12px;
+    }
+
+    .refresh-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 16px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      box-shadow: 0 0 20px rgba(99,102,241,0.3);
+      transition: all 0.2s;
+    }
+
+    .refresh-btn:hover { box-shadow: 0 0 28px rgba(99,102,241,0.5); transform: translateY(-1px); }
+    .refresh-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    /* ── Progress ── */
+    .progress-section {
+      background: rgba(8,12,20,0.9);
+      border-bottom: 1px solid var(--glass-border);
+      padding: 7px 32px;
+      display: none; align-items: center; gap: 12px;
+    }
+    .progress-section.visible { display: flex; }
+    .progress-msg { font-size: 11px; color: var(--text-2); white-space: nowrap; }
+    .progress-track { flex: 1; background: rgba(255,255,255,0.06); border-radius: 99px; height: 4px; overflow: hidden; }
+    #progress-fill { height: 100%; background: linear-gradient(90deg, #6366f1, #a78bfa); border-radius: 99px; transition: width 0.4s; }
+    #progress-fill.error { background: var(--red); }
+    .progress-pct { font-size: 11px; color: var(--text-3); width: 30px; text-align: right; }
+
+    .error-banner { background: rgba(248,113,113,0.08); border-bottom: 1px solid rgba(248,113,113,0.2); color: var(--red); padding: 7px 32px; font-size: 12px; display: none; }
+    .error-banner.visible { display: block; }
+
+    /* ── Main ── */
+    .main { max-width: 1400px; margin: 0 auto; padding: 24px 32px 48px; position: relative; z-index: 1; }
+
+    /* ── Grand cards ── */
+    .grand-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 18px; }
+
+    .grand-card {
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius);
+      padding: 20px 22px;
+      backdrop-filter: blur(10px);
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .grand-card:hover { background: var(--glass-hover); border-color: rgba(255,255,255,0.14); }
+
+    .grand-card::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+    }
+
+    .grand-card .card-label {
+      font-size: 10.5px;
+      font-weight: 600;
+      color: var(--text-3);
+      text-transform: uppercase;
+      letter-spacing: 0.7px;
+      margin-bottom: 10px;
+    }
+
+    .g-value {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -1px;
+      line-height: 1.1;
+    }
+    .g-value.pos { color: var(--green-text); text-shadow: 0 0 20px rgba(52,211,153,0.3); }
+    .g-value.neg { color: var(--red-text);   text-shadow: 0 0 20px rgba(248,113,113,0.3); }
+
+    /* ── Charts ── */
+    .charts-row { display: grid; grid-template-columns: 1fr 1.4fr; gap: 12px; margin-bottom: 18px; }
+
+    .chart-card {
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius);
+      padding: 20px 22px;
+      backdrop-filter: blur(10px);
+    }
+
+    .chart-card h3 { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+    .chart-card p  { font-size: 11px; color: var(--text-3); margin-bottom: 14px; }
+    .chart-wrap { position: relative; height: 190px; }
+
+    /* ── Section ── */
+    .section {
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius);
+      margin-bottom: 14px;
+      overflow: hidden;
+      backdrop-filter: blur(10px);
+    }
+
+    .section-header {
+      display: flex; align-items: center; gap: 10px;
+      padding: 13px 20px;
+      border-bottom: 1px solid var(--glass-border);
+      background: rgba(255,255,255,0.02);
+    }
+
+    .section-icon {
+      width: 30px; height: 30px;
+      border-radius: 7px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px;
+    }
+
+    .section-title { font-size: 13px; font-weight: 700; color: var(--text); }
+
+    .section-badge {
+      background: rgba(129,140,248,0.15);
+      color: var(--accent);
+      font-size: 10px; font-weight: 700;
+      padding: 2px 7px; border-radius: 20px;
+      border: 1px solid rgba(129,140,248,0.25);
+    }
+
+    .section-note { margin-left: auto; font-size: 10.5px; color: var(--text-3); }
+
+    /* ── Sub-metrics ── */
+    .sub-metrics {
+      display: grid; grid-template-columns: repeat(4,1fr);
+      background: rgba(255,255,255,0.015);
+      border-bottom: 1px solid var(--glass-border);
+    }
+
+    .sub-metric { padding: 11px 20px; border-right: 1px solid var(--glass-border); }
+    .sub-metric:last-child { border-right: none; }
+    .sub-metric .sub-label { font-size: 9.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; color: var(--text-3); margin-bottom: 4px; }
+
+    .s-value { font-size: 16px; font-weight: 700; color: var(--text); letter-spacing: -0.3px; }
+    .s-value.pos { color: var(--green-text); }
+    .s-value.neg { color: var(--red-text); }
+
+    /* ── Table ── */
+    table { width: 100%; border-collapse: collapse; }
+    thead tr { border-bottom: 1px solid var(--glass-border); }
+    thead th { padding: 8px 18px; font-size: 10px; font-weight: 700; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.5px; text-align: right; }
+    thead th:first-child { text-align: left; }
+    tbody tr { border-bottom: 1px solid rgba(255,255,255,0.04); transition: background 0.12s; }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: rgba(255,255,255,0.03); }
+    td { padding: 10px 18px; text-align: right; font-size: 13px; color: var(--text); }
+    td:first-child { text-align: left; }
+    .price-cell { font-variant-numeric: tabular-nums; font-weight: 500; color: var(--text-2); }
+
+    .r-name { font-weight: 600; font-size: 13px; color: var(--text); display: flex; align-items: center; gap: 5px; }
+    .r-sub  { font-size: 10.5px; color: var(--text-3); margin-top: 1px; display: flex; align-items: center; gap: 4px; }
+
+    .fx-tag  { background: rgba(167,139,250,0.15); color: #c4b5fd; border-radius: 4px; padding: 1px 5px; font-size: 9px; font-weight: 700; }
+    .cat-tag { background: rgba(99,179,237,0.12);  color: #90cdf4; border-radius: 4px; padding: 1px 5px; font-size: 9px; font-weight: 700; }
+
+    .badge {
+      display: inline-flex; align-items: center; justify-content: flex-end;
+      padding: 3px 8px; border-radius: 6px;
+      font-size: 12px; font-weight: 600; white-space: nowrap; min-width: 72px;
+    }
+    .badge.pos { background: var(--green-glow); color: var(--green-text); border: 1px solid rgba(52,211,153,0.25); }
+    .badge.neg { background: var(--red-glow);   color: var(--red-text);   border: 1px solid rgba(248,113,113,0.25); }
+  </style>
 </head>
 <body>
-<header class="site-header">
-  <div class="header-left">
-    <h1>My <span>Investment</span> Portfolio</h1>
-    <div class="subtitle" id="last-updated">Loading live prices…</div>
-  </div>
-  <button class="refresh-btn" id="refresh-btn" onclick="loadPrices()">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
-    Refresh prices
-  </button>
-</header>
-<div class="main">
+  <header class="header">
+    <div class="header-brand">
+      <div class="logo-ring">📈</div>
+      <div>
+        <div class="header-title">My <span>Investment</span> Portfolio</div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div class="fx-pill" id="last-updated">Loading prices…</div>
+      <button id="refresh-btn" class="refresh-btn" onclick="loadPrices()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+        Refresh prices
+      </button>
+    </div>
+  </header>
+
   <div class="progress-section" id="progress-section">
-    <div class="progress-label"><span id="progress-msg">Fetching live prices…</span><span id="progress-pct">0%</span></div>
-    <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+    <span class="progress-msg" id="progress-msg">Loading…</span>
+    <div class="progress-track"><div id="progress-fill" style="width:0%"></div></div>
+    <span class="progress-pct" id="progress-pct">0%</span>
   </div>
-  <div class="error-banner" id="error-banner">Could not fetch live prices. Showing last known values.</div>
-  <div class="grand-grid">
-    <div class="grand-card"><div class="g-label">Total Invested</div><div class="g-value" id="grand-invested">—</div></div>
-    <div class="grand-card"><div class="g-label">Value (₹)</div><div class="g-value" id="grand-value">—</div></div>
-    <div class="grand-card"><div class="g-label">Total P / L ($)</div><div class="g-value" id="grand-pl">—</div></div>
-    <div class="grand-card"><div class="g-label">Overall Return</div><div class="g-value" id="grand-pct">—</div></div>
-  </div>
-  <div class="section">
-    <div class="section-header"><h2>US &amp; International Stocks</h2><span class="s-badge" id="us-count"></span></div>
-    <div class="sec-summary">
-      <div class="sum-card"><div class="s-label">Invested (₹)</div><div class="s-value" id="s-invested">—</div></div>
-      <div class="sum-card"><div class="s-label">Value (₹)</div><div class="s-value" id="s-value">—</div></div>
-      <div class="sum-card"><div class="s-label">P / L ($)</div><div class="s-value" id="s-pl">—</div></div>
-      <div class="sum-card"><div class="s-label">Return</div><div class="s-value" id="s-pct">—</div></div>
+  <div class="error-banner" id="error-banner">⚠ Could not fetch live prices. Showing last known values.</div>
+
+  <main class="main">
+    <div class="grand-grid">
+      <div class="grand-card"><div class="card-label">Total Invested</div><div class="g-value" id="grand-invested">—</div></div>
+      <div class="grand-card"><div class="card-label">Current Value ($)</div><div class="g-value" id="grand-value">—</div></div>
+      <div class="grand-card"><div class="card-label">Total P / L ($)</div><div class="g-value" id="grand-pl">—</div></div>
+      <div class="grand-card"><div class="card-label">Overall Return</div><div class="g-value" id="grand-pct">—</div></div>
     </div>
-    <div class="table-wrap">
-      <table><thead><tr><th>Stock</th><th>Invested (₹)</th><th>Avg Cost</th><th>Current Price</th><th>Value (₹)</th><th>P / L ($)</th><th>P / L (%)</th></tr></thead><tbody id="us-tbody"></tbody></table>
-      <div class="table-footer"><span class="table-note" id="us-note">—</span></div>
+
+    <div class="charts-row">
+      <div class="chart-card">
+        <h3>Portfolio Allocation</h3>
+        <p>Invested amount by asset class</p>
+        <div class="chart-wrap"><canvas id="allocationChart"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <h3>P / L by Category</h3>
+        <p>Unrealised gain or loss per segment</p>
+        <div class="chart-wrap"><canvas id="plChart"></canvas></div>
+      </div>
     </div>
-  </div>
-  <hr class="divider"><br>
-  <div class="section">
-    <div class="section-header"><h2>UAE Stocks</h2><span class="s-badge uae" id="uae-count"></span></div>
-    <div class="sec-summary">
-      <div class="sum-card"><div class="s-label">Invested (₹)</div><div class="s-value" id="uae-invested">—</div></div>
-      <div class="sum-card"><div class="s-label">Value (₹)</div><div class="s-value" id="uae-value">—</div></div>
-      <div class="sum-card"><div class="s-label">P / L ($)</div><div class="s-value" id="uae-pl">—</div></div>
-      <div class="sum-card"><div class="s-label">Return</div><div class="s-value" id="uae-pct">—</div></div>
+
+    <!-- US Stocks -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-icon" style="background:rgba(99,102,241,0.15);">🇺🇸</div>
+        <span class="section-title">US &amp; International Stocks</span>
+        <span class="section-badge" id="us-count">—</span>
+        <span class="section-note" id="us-note">—</span>
+      </div>
+      <div class="sub-metrics">
+        <div class="sub-metric"><div class="sub-label">Invested ($)</div><div class="s-value" id="s-invested">—</div></div>
+        <div class="sub-metric"><div class="sub-label">Value ($)</div><div class="s-value" id="s-value">—</div></div>
+        <div class="sub-metric"><div class="sub-label">P / L ($)</div><div class="s-value" id="s-pl">—</div></div>
+        <div class="sub-metric"><div class="sub-label">Return</div><div class="s-value" id="s-pct">—</div></div>
+      </div>
+      <table><thead><tr><th>Stock</th><th>Invested ($)</th><th>Avg Cost</th><th>Current Price</th><th>Value ($)</th><th>P / L ($)</th><th>P / L (%)</th></tr></thead><tbody id="us-tbody"></tbody></table>
     </div>
-    <div class="table-wrap">
-      <table><thead><tr><th>Stock</th><th>Invested (₹)</th><th>Avg Cost (AED)</th><th>Current Price (AED)</th><th>Current Value ($)</th><th>P / L ($)</th><th>P / L (%)</th></tr></thead><tbody id="uae-tbody"></tbody></table>
-      <div class="table-footer"><span class="table-note">Prices in AED · converted at live rate</span></div>
+
+    <!-- UAE -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-icon" style="background:rgba(251,191,36,0.12);">🇦🇪</div>
+        <span class="section-title">UAE Stocks</span>
+        <span class="section-badge" id="uae-count">—</span>
+        <span class="section-note">Prices in AED · converted at live rate</span>
+      </div>
+      <div class="sub-metrics">
+        <div class="sub-metric"><div class="sub-label">Invested ($)</div><div class="s-value" id="uae-invested">—</div></div>
+        <div class="sub-metric"><div class="sub-label">Value ($)</div><div class="s-value" id="uae-value">—</div></div>
+        <div class="sub-metric"><div class="sub-label">P / L ($)</div><div class="s-value" id="uae-pl">—</div></div>
+        <div class="sub-metric"><div class="sub-label">Return</div><div class="s-value" id="uae-pct">—</div></div>
+      </div>
+      <table><thead><tr><th>Stock</th><th>Invested ($)</th><th>Avg Cost (AED)</th><th>Current Price (AED)</th><th>Current Value ($)</th><th>P / L ($)</th><th>P / L (%)</th></tr></thead><tbody id="uae-tbody"></tbody></table>
     </div>
-  </div>
-  <hr class="divider"><br>
-  <div class="section">
-    <div class="section-header"><h2>India — Mutual Funds</h2><span class="s-badge india" id="india-count"></span></div>
-    <div class="sec-summary">
-      <div class="sum-card"><div class="s-label">Invested (₹)</div><div class="s-value" id="india-invested">—</div></div>
-      <div class="sum-card"><div class="s-label">Value (₹)</div><div class="s-value" id="india-value">—</div></div>
-      <div class="sum-card"><div class="s-label">P / L ($)</div><div class="s-value" id="india-pl">—</div></div>
-      <div class="sum-card"><div class="s-label">Return</div><div class="s-value" id="india-pct">—</div></div>
-    </div>
-    <div class="table-wrap">
+
+    <!-- India MF -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-icon" style="background:rgba(52,211,153,0.12);">🇮🇳</div>
+        <span class="section-title">India — Mutual Funds</span>
+        <span class="section-badge" id="india-count">—</span>
+        <span class="section-note" id="india-note">—</span>
+      </div>
+      <div class="sub-metrics">
+        <div class="sub-metric"><div class="sub-label">Invested ($)</div><div class="s-value" id="india-invested">—</div></div>
+        <div class="sub-metric"><div class="sub-label">Value ($)</div><div class="s-value" id="india-value">—</div></div>
+        <div class="sub-metric"><div class="sub-label">P / L ($)</div><div class="s-value" id="india-pl">—</div></div>
+        <div class="sub-metric"><div class="sub-label">Return</div><div class="s-value" id="india-pct">—</div></div>
+      </div>
       <table><thead><tr><th>Fund</th><th>Invested (INR)</th><th>Invested ($)</th><th>Current Value (INR)</th><th>Current Value ($)</th><th>P / L ($)</th><th>P / L (%)</th></tr></thead><tbody id="india-tbody"></tbody></table>
-      <div class="table-footer"><span class="table-note" id="india-note">—</span></div>
     </div>
-  </div>
-  <hr class="divider"><br>
-  <div class="section">
-    <div class="section-header"><h2>India — HDFC Demat Holdings</h2><span class="s-badge india" id="hdfc-count"></span></div>
-    <div class="sec-summary">
-      <div class="sum-card"><div class="s-label">Invested (₹)</div><div class="s-value" id="hdfc-invested">—</div></div>
-      <div class="sum-card"><div class="s-label">Value (₹)</div><div class="s-value" id="hdfc-value">—</div></div>
-      <div class="sum-card"><div class="s-label">P / L (₹)</div><div class="s-value" id="hdfc-pl">—</div></div>
-      <div class="sum-card"><div class="s-label">Return</div><div class="s-value" id="hdfc-pct">—</div></div>
-    </div>
-    <div class="table-wrap">
+
+    <!-- HDFC -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-icon" style="background:rgba(244,114,182,0.12);">📊</div>
+        <span class="section-title">India — HDFC Demat Holdings</span>
+        <span class="section-badge" id="hdfc-count">—</span>
+        <span class="section-note" id="hdfc-note">—</span>
+      </div>
+      <div class="sub-metrics">
+        <div class="sub-metric"><div class="sub-label">Invested (₹)</div><div class="s-value" id="hdfc-invested">—</div></div>
+        <div class="sub-metric"><div class="sub-label">Value (₹)</div><div class="s-value" id="hdfc-value">—</div></div>
+        <div class="sub-metric"><div class="sub-label">P / L (₹)</div><div class="s-value" id="hdfc-pl">—</div></div>
+        <div class="sub-metric"><div class="sub-label">Return</div><div class="s-value" id="hdfc-pct">—</div></div>
+      </div>
       <table><thead><tr><th>Stock / ETF</th><th>Qty</th><th>Avg Cost (₹)</th><th>Current Price (₹)</th><th>Invested (₹)</th><th>Current Value (₹)</th><th>P / L (₹)</th><th>P / L (%)</th></tr></thead><tbody id="hdfc-tbody"></tbody></table>
-      <div class="table-footer"><span class="table-note" id="hdfc-note">—</span></div>
     </div>
-  </div>
-  <hr class="divider"><br>
-  <div class="section">
-    <div class="section-header"><h2>Crypto</h2><span class="s-badge crypto">1 holding</span></div>
-    <div class="sec-summary">
-      <div class="sum-card"><div class="s-label">Invested (₹)</div><div class="s-value" id="c-invested">—</div></div>
-      <div class="sum-card"><div class="s-label">Value (₹)</div><div class="s-value" id="c-value">—</div></div>
-      <div class="sum-card"><div class="s-label">P / L ($)</div><div class="s-value" id="c-pl">—</div></div>
-      <div class="sum-card"><div class="s-label">Return</div><div class="s-value" id="c-pct">—</div></div>
+
+    <!-- Crypto -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-icon" style="background:rgba(251,191,36,0.12); font-size:13px; font-weight:800; color:#fbbf24;">₿</div>
+        <span class="section-title">Crypto</span>
+        <span class="section-badge" id="crypto-count">—</span>
+        <span class="section-note" id="crypto-note">—</span>
+      </div>
+      <div class="sub-metrics">
+        <div class="sub-metric"><div class="sub-label">Invested ($)</div><div class="s-value" id="c-invested">—</div></div>
+        <div class="sub-metric"><div class="sub-label">Value ($)</div><div class="s-value" id="c-value">—</div></div>
+        <div class="sub-metric"><div class="sub-label">P / L ($)</div><div class="s-value" id="c-pl">—</div></div>
+        <div class="sub-metric"><div class="sub-label">Return</div><div class="s-value" id="c-pct">—</div></div>
+      </div>
+      <table><thead><tr><th>Coin</th><th>Invested ($)</th><th>Avg Cost</th><th>Current Price</th><th>Value ($)</th><th>P / L ($)</th><th>P / L (%)</th></tr></thead><tbody id="crypto-tbody"></tbody></table>
     </div>
-    <div class="table-wrap">
-      <table><thead><tr><th>Coin</th><th>Invested (₹)</th><th>Avg Cost</th><th>Current Price</th><th>Value (₹)</th><th>P / L ($)</th><th>P / L (%)</th></tr></thead><tbody id="crypto-tbody"></tbody></table>
-      <div class="table-footer"><span class="table-note" id="crypto-note">—</span></div>
-    </div>
-  </div>
-</div>
-<script>
-const WORKER_URL='https://portfolio-prices.karnasdk.workers.dev/';
-let PRICES={RMS:1659,ASML:1320.83,MELI:1719,UBER:73.84,HOOD:69.30,MSFT:356.90,NVDA:182.65,RDDT:141.80,PLTR:156.43,SHOP:133.50,AMZN:213.49,META:600.05,NFLX:91.87,NU:14.64,BLK:930.88,FICO:1062,MSTR:119.13,COIN:175.76,TSLA:393.09,R2US:54.39,EMAR:11.70,ENBD:26.90,FAB:18.20,ADIB:21.0,ADCB:12.68,BTC:71722.99,SHIB:0.00000606,SUI:0.9496,ADA:0.2583,AVAX:9.315,DOGE:0.09432,LTC:55.09};
-let FX={EUR_USD:1.153,GBP_USD:1.3205,INR_USD:0.01075,AED_USD:1/3.6725};
-let MF_NAVS={};
-let INDIA_STOCK_PRICES={};
-const US_STOCKS=[
-  {name:'Hermes',ticker:'RMS',invested:10000,avgCost:1800,currency:'EUR'},
-  {name:'ASML',ticker:'ASML',invested:10000,avgCost:1200},
-  {name:'Mercado Libre',ticker:'MELI',invested:10000,avgCost:1900},
-  {name:'Uber',ticker:'UBER',invested:10000,avgCost:75},
-  {name:'Robinhood',ticker:'HOOD',invested:10000,avgCost:72},
-  {name:'Microsoft',ticker:'MSFT',invested:15000,avgCost:380},
-  {name:'Nvidia',ticker:'NVDA',invested:15000,avgCost:175},
-  {name:'Reddit',ticker:'RDDT',invested:5000,avgCost:133},
-  {name:'Palantir',ticker:'PLTR',invested:15000,avgCost:150},
-  {name:'Shopify',ticker:'SHOP',invested:15000,avgCost:115},
-  {name:'Amazon',ticker:'AMZN',invested:15000,avgCost:215},
-  {name:'Facebook (Meta)',ticker:'META',invested:15000,avgCost:600},
-  {name:'Netflix',ticker:'NFLX',invested:15000,avgCost:90},
-  {name:'Nubank',ticker:'NU',invested:15000,avgCost:13},
-  {name:'Blackrock',ticker:'BLK',invested:15000,avgCost:1000},
-  {name:'Fair Isaac Corp',ticker:'FICO',invested:15000,avgCost:1100},
-  {name:'Strategy (MicroStrategy)',ticker:'MSTR',invested:50000,avgCost:110},
-  {name:'Coinbase',ticker:'COIN',invested:50000,avgCost:150},
-  {name:'Tesla',ticker:'TSLA',invested:20000,avgCost:354},
-  {name:'SPDR Russell 2000 (UK)',ticker:'R2US',invested:80000,avgCost:47.50,currency:'GBP'},
-];
-const UAE_STOCKS=[
-  {name:'Emaar',ticker:'EMAR',invested:10000,avgCost:11,currency:'AED'},
-  {name:'Emirates NBD Bank',ticker:'ENBD',invested:10000,avgCost:27,currency:'AED'},
-  {name:'First Abu Dhabi Bank',ticker:'FAB',invested:10000,avgCost:17,currency:'AED'},
-  {name:'Abu Dhabi Islamic Bank',ticker:'ADIB',invested:5000,avgCost:21,currency:'AED'},
-  {name:'Abu Dhabi Commercial Bank',ticker:'ADCB',invested:5000,avgCost:12,currency:'AED'},
-];
-const INDIA_FUNDS=[
-  {name:'Kotak Flexicap Fund Growth',category:'Flexicap',bookINR:2630632,valueINR:3116381,mfKey:'KOTAK_FLEXICAP',_units:37841.75},
-  {name:'HDFC Nifty 50 Index Fund',category:'Index',bookINR:4599770,valueINR:5220350,mfKey:'HDFC_NIFTY50',_units:23116.285},
-  {name:'HSBC Nifty 50 Index Fund',category:'Index',bookINR:999950,valueINR:1226414,mfKey:'HSBC_NIFTY50',_units:44229.704},
-  {name:'ICICI Pru Nifty Next 50',category:'Index',bookINR:5297735,valueINR:6411454,mfKey:'ICICI_NIFTYNEXT50',_units:110080.178},
-  {name:'Nippon Large Cap Fund Growth',category:'Large Cap',bookINR:2073896,valueINR:2516485,mfKey:'NIPPON_LARGECAP',_units:28965.838},
-  {name:'HDFC Small Cap Fund Regular',category:'Small Cap',bookINR:2324884,valueINR:2411165,mfKey:'HDFC_SMALLCAP',_units:18947.507},
-  {name:'Kotak Small Cap Fund Growth',category:'Small Cap',bookINR:2249888,valueINR:2230368,mfKey:'KOTAK_SMALLCAP',_units:9495.456},
-];
-const HDFC_HOLDINGS=[
-  {name:'ABB India Limited',type:'Equity',qty:18,avgCost:5767.31,currentPrice:6564.00,stockKey:'ABB_INDIA'},
-  {name:'Asian Paints Limited',type:'Equity',qty:42,avgCost:2424.19,currentPrice:2273.00,stockKey:'ASIAN_PAINTS'},
-  {name:'Central Depository Services (CDSL)',type:'Equity',qty:76,avgCost:1333.84,currentPrice:1282.80,stockKey:'CDSL'},
-  {name:'CG Power & Industrial Solutions',type:'Equity',qty:145,avgCost:701.27,currentPrice:725.00,stockKey:'CG_POWER'},
-  {name:'Hindustan Aeronautics (HAL)',type:'Equity',qty:25,avgCost:4169.03,currentPrice:3899.30,stockKey:'HAL'},
-  {name:'ICICI Pru Nifty Oil & Gas ETF',type:'ETF',qty:80040,avgCost:12.60,currentPrice:11.30,stockKey:'ICICI_OILGAS_ETF'},
-  {name:'ICICI Pru Nifty FMCG ETF',type:'ETF',qty:17900,avgCost:56.41,currentPrice:51.32,stockKey:'ICICI_FMCG_ETF'},
-  {name:'IRCTC',type:'Equity',qty:161,avgCost:632.84,currentPrice:535.55,stockKey:'IRCTC'},
-  {name:'Jio Financial Services',type:'Equity',qty:400,avgCost:260.54,currentPrice:245.33,stockKey:'JIO_FINANCIAL'},
-  {name:'Moschip Technologies',type:'Equity',qty:530,avgCost:195.62,currentPrice:175.30,stockKey:'MOSCHIP'},
-  {name:'Motilal Oswal Nifty Realty ETF',type:'ETF',qty:11720,avgCost:86.07,currentPrice:74.62,stockKey:'MOTILAL_REALTY_ETF'},
-  {name:'Nippon India ETF Nifty IT (ITBEES)',type:'ETF',qty:25750,avgCost:39.17,currentPrice:34.75,stockKey:'NIPPON_IT_ETF'},
-  {name:'Waaree Energies Limited',type:'Equity',qty:36,avgCost:2897.29,currentPrice:3129.80,stockKey:'WAAREE'},
-];
-const CRYPTO=[{name:'Bitcoin',ticker:'BTC',invested:500000,avgCost:69000},{name:'Shiba Inu',ticker:'SHIB',invested:4424,avgCost:0.000012046},{name:'Sui',ticker:'SUI',invested:18894,avgCost:3.354},{name:'Cardano',ticker:'ADA',invested:22290,avgCost:0.8268},{name:'Avalanche',ticker:'AVAX',invested:19693,avgCost:24.931},{name:'Dogecoin',ticker:'DOGE',invested:20791,avgCost:0.2226},{name:'Litecoin',ticker:'LTC',invested:21346,avgCost:111.61}];
+  </main>
 
-function fmtW(n){return '$'+Math.round(n).toLocaleString('en-US');}
-function fmtINR(n){return '₹'+Math.round(n).toLocaleString('en-IN');}function fmtINR2(n){return '₹'+n.toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2});}
-function fmtP(n){return '$'+n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');}
-function fmtPct(n){return(n>=0?'+':'')+n.toFixed(2)+'%';}
-function fmtPL(n){return(n>=0?'+$':'-$')+Math.round(Math.abs(n)).toLocaleString('en-US');}
-function fmtPLINR(n){return(n>=0?'+₹':'-₹')+Math.round(Math.abs(n)).toLocaleString('en-IN');}
-function toUSD(price,currency){if(!currency)return price;if(currency==='EUR')return price*FX.EUR_USD;if(currency==='GBP')return price*FX.GBP_USD;if(currency==='AED')return price*FX.AED_USD;return price;}
-function setMetric(id,val,pos,grand){const el=document.getElementById(id);if(!el)return;el.textContent=val;if(pos!==undefined)el.className=(grand?'g-value':'s-value')+' '+(pos?'pos':'neg');}
-
-function buildStockRow(h){
-  const isAED=h.currency==='AED';
-  const fxTag=(h.currency&&!isAED)?'<span class="fx-tag">'+h.currency+'→USD</span>':'';
-  const avgUSD=toUSD(h.avgCost,h.currency);
-  const rawPrice=PRICES[h.ticker]||h.avgCost;
-  const priceUSD=toUSD(rawPrice,h.currency);
-  const qty=h.invested/avgUSD;
-  const current=qty*priceUSD;
-  const pl=current-h.invested;
-  const plPct=(pl/h.invested)*100;
-  const pos=pl>=0;
-  const avgDisp=isAED?'AED '+h.avgCost.toFixed(2):fmtP(avgUSD);
-  const priceDisp=isAED?'AED '+rawPrice.toFixed(2):fmtP(priceUSD);
-  return '<tr><td><div class="r-name">'+h.name+fxTag+'</div><div class="r-sub">'+h.ticker+'</div></td><td class="price-cell">'+fmtW(h.invested)+'</td><td class="price-cell">'+avgDisp+'</td><td class="price-cell">'+priceDisp+'</td><td class="price-cell">'+fmtW(current)+'</td><td><span class="badge '+(pos?'pos':'neg')+'">'+fmtPL(pl)+'</span></td><td><span class="badge '+(pos?'pos':'neg')+'">'+fmtPct(plPct)+'</span></td></tr>';
-}
-
-function buildIndiaRow(f){
-  const liveINR=(MF_NAVS[f.mfKey]&&f._units)?MF_NAVS[f.mfKey]*f._units:f.valueINR;
-  const bookUSD=f.bookINR*FX.INR_USD;
-  const currUSD=liveINR*FX.INR_USD;
-  const pl=currUSD-bookUSD;
-  const plPct=(pl/bookUSD)*100;
-  const pos=pl>=0;
-  const navTag=MF_NAVS[f.mfKey]?' · NAV ₹'+MF_NAVS[f.mfKey].toFixed(2):'';
-  return '<tr><td><div class="r-name">'+f.name+'</div><div class="r-sub"><span class="cat-tag">'+f.category+'</span>'+navTag+'</div></td><td class="price-cell">'+fmtINR(f.bookINR)+'</td><td class="price-cell">'+fmtW(bookUSD)+'</td><td class="price-cell">'+fmtINR(Math.round(liveINR))+'</td><td class="price-cell">'+fmtW(currUSD)+'</td><td><span class="badge '+(pos?'pos':'neg')+'">'+fmtPL(pl)+'</span></td><td><span class="badge '+(pos?'pos':'neg')+'">'+fmtPct(plPct)+'</span></td></tr>';
-}
-
-function buildHdfcRow(h){
-  const livePrice=INDIA_STOCK_PRICES[h.stockKey]||h.currentPrice;
-  const investedINR=h.qty*h.avgCost;
-  const currentINR=h.qty*livePrice;
-  const pl=currentINR-investedINR;
-  const plPct=(pl/investedINR)*100;
-  const pos=pl>=0;
-  const typeTag=h.type==='ETF'?'<span class="cat-tag">ETF</span>':'';
-  return '<tr><td><div class="r-name">'+h.name+'</div><div class="r-sub">'+typeTag+'</div></td><td class="price-cell">'+h.qty.toLocaleString('en-IN')+'</td><td class="price-cell">'+fmtINR(h.avgCost)+'</td><td class="price-cell">'+fmtINR(livePrice)+'</td><td class="price-cell">'+fmtINR(investedINR)+'</td><td class="price-cell">'+fmtINR(currentINR)+'</td><td><span class="badge '+(pos?'pos':'neg')+'">'+fmtPLINR(pl)+'</span></td><td><span class="badge '+(pos?'pos':'neg')+'">'+fmtPct(plPct)+'</span></td></tr>';
-}
-
-function calcStocks(holdings){let inv=0,cur=0;holdings.forEach(h=>{const avgUSD=toUSD(h.avgCost,h.currency);const priceUSD=toUSD(PRICES[h.ticker]||h.avgCost,h.currency);inv+=h.invested;cur+=(h.invested/avgUSD)*priceUSD;});return{inv,cur,pl:cur-inv,pct:(cur-inv)/inv*100};}
-function calcIndia(){let inv=0,cur=0;INDIA_FUNDS.forEach(f=>{inv+=f.bookINR*FX.INR_USD;cur+=((MF_NAVS[f.mfKey]&&f._units)?MF_NAVS[f.mfKey]*f._units:f.valueINR)*FX.INR_USD;});return{inv,cur,pl:cur-inv,pct:(cur-inv)/inv*100};}
-function calcHdfc(){let inv=0,cur=0;HDFC_HOLDINGS.forEach(h=>{const lp=INDIA_STOCK_PRICES[h.stockKey]||h.currentPrice;inv+=h.qty*h.avgCost*FX.INR_USD;cur+=h.qty*lp*FX.INR_USD;});return{inv,cur,pl:cur-inv,pct:(cur-inv)/inv*100};}
-function calcHdfcINR(){let inv=0,cur=0;HDFC_HOLDINGS.forEach(h=>{const lp=INDIA_STOCK_PRICES[h.stockKey]||h.currentPrice;inv+=h.qty*h.avgCost;cur+=h.qty*lp;});return{inv,cur,pl:cur-inv,pct:(cur-inv)/inv*100};}
-
-function renderAll(){
-  const s=calcStocks(US_STOCKS),u=calcStocks(UAE_STOCKS),ind=calcIndia(),hdfc=calcHdfc(),c=calcStocks(CRYPTO);
-  document.getElementById('us-tbody').innerHTML=US_STOCKS.map(buildStockRow).join('');
-  document.getElementById('uae-tbody').innerHTML=UAE_STOCKS.map(buildStockRow).join('');
-  document.getElementById('india-tbody').innerHTML=INDIA_FUNDS.map(buildIndiaRow).join('');
-  document.getElementById('hdfc-tbody').innerHTML=HDFC_HOLDINGS.map(buildHdfcRow).join('');
-  document.getElementById('crypto-tbody').innerHTML=CRYPTO.map(buildStockRow).join('');
-  document.getElementById('us-count').textContent=US_STOCKS.length+' holdings';
-  document.getElementById('uae-count').textContent=UAE_STOCKS.length+' holdings';
-  document.getElementById('india-count').textContent=INDIA_FUNDS.length+' funds';
-  document.getElementById('hdfc-count').textContent=HDFC_HOLDINGS.length+' holdings';
-  [['s',s],['uae',u],['india',ind],['c',c]].forEach(([id,sec])=>{
-    setMetric(id+'-invested',fmtW(sec.inv));setMetric(id+'-value',fmtW(sec.cur));
-    setMetric(id+'-pl',fmtPL(sec.pl),sec.pl>=0);setMetric(id+'-pct',fmtPct(sec.pct),sec.pct>=0);
-  });
-  const hdfcINR=calcHdfcINR();setMetric('hdfc-invested',fmtINR(hdfcINR.inv));setMetric('hdfc-value',fmtINR(hdfcINR.cur));setMetric('hdfc-pl',fmtPLINR(hdfcINR.pl),hdfcINR.pl>=0);setMetric('hdfc-pct',fmtPct(hdfcINR.pct),hdfcINR.pct>=0);const gI=s.inv+u.inv+ind.inv+hdfc.inv+c.inv,gC=s.cur+u.cur+ind.cur+hdfc.cur+c.cur,gPL=gC-gI,gPct=(gPL/gI)*100;
-  setMetric('grand-invested',fmtW(gI),undefined,true);setMetric('grand-value',fmtW(gC),undefined,true);
-  setMetric('grand-pl',fmtPL(gPL),gPL>=0,true);setMetric('grand-pct',fmtPct(gPct),gPct>=0,true);
-}
-
-function setProgress(pct,msg,err){
-  document.getElementById('progress-fill').style.width=pct+'%';
-  document.getElementById('progress-msg').textContent=msg;
-  document.getElementById('progress-pct').textContent=pct+'%';
-  if(err)document.getElementById('progress-fill').classList.add('error');
-  else document.getElementById('progress-fill').classList.remove('error');
-}
-
-async function loadPrices(){
-  const btn=document.getElementById('refresh-btn');
-  btn.disabled=true;btn.textContent='Fetching…';
-  document.getElementById('progress-section').classList.add('visible');
-  document.getElementById('error-banner').classList.remove('visible');
-  try{
-    setProgress(20,'Calling price server…');
-    const res=await fetch(WORKER_URL);
-    setProgress(70,'Processing prices…');
-    if(!res.ok)throw new Error('Worker error '+res.status);
-    const data=await res.json();
-    if(data.prices)Object.entries(data.prices).forEach(([k,v])=>{if(v>0)PRICES[k]=v;});
-    // UAE direct browser fetch (Yahoo Finance from user's IP, not geo-blocked like Cloudflare Workers)
-    try{const ucr=await fetch('https://query2.finance.yahoo.com/v1/test/getcrumb',{credentials:'include'});const ucrumb=(await ucr.text()).trim();if(ucrumb&&!ucrumb.startsWith('<')&&ucrumb.length<100){const usyms=encodeURIComponent('EMAAR.DU,ENBD.DU,FAB.AD,ADIB.AD,ADCB.AD');const ures=await fetch('https://query1.finance.yahoo.com/v7/finance/quote?symbols='+usyms+'&crumb='+encodeURIComponent(ucrumb),{credentials:'include'});const ud=await ures.json();const um={'EMAAR.DU':'EMAR','ENBD.DU':'ENBD','FAB.AD':'FAB','ADIB.AD':'ADIB','ADCB.AD':'ADCB'};for(const ui of(ud?.quoteResponse?.result||[])){const uk=um[ui.symbol];if(uk&&ui.regularMarketPrice>0)PRICES[uk]=ui.regularMarketPrice;}}}catch(ue){}try{const cgids='bitcoin,litecoin,dogecoin,cardano,avalanche-2,sui,shiba-inu';const cgres=await fetch('https://api.coingecko.com/api/v3/simple/price?ids='+cgids+'&vs_currencies=usd');const cgd=await cgres.json();const cgm={'bitcoin':'BTC','litecoin':'LTC','dogecoin':'DOGE','cardano':'ADA','avalanche-2':'AVAX','sui':'SUI','shiba-inu':'SHIB'};Object.entries(cgm).forEach(([id,key])=>{if(cgd[id]?.usd>0)PRICES[key]=cgd[id].usd;});}catch(ce){}
-    if(data.fx){if(data.fx.EUR_USD>0)FX.EUR_USD=data.fx.EUR_USD;if(data.fx.GBP_USD>0)FX.GBP_USD=data.fx.GBP_USD;if(data.fx.INR_USD>0)FX.INR_USD=data.fx.INR_USD;if(data.fx.AED_USD>0)FX.AED_USD=data.fx.AED_USD;}
-    if(data.mf_navs)Object.entries(data.mf_navs).forEach(([k,v])=>{if(v>0)MF_NAVS[k]=v;});
-    if(data.india_stocks)Object.entries(data.india_stocks).forEach(([k,v])=>{if(v>0)INDIA_STOCK_PRICES[k]=v;});
-    setProgress(100,'All prices updated ✓');
-    const now=new Date().toLocaleString('en-GB',{dateStyle:'medium',timeStyle:'short'});
-    document.getElementById('last-updated').textContent='Live prices · Updated '+now+' · EUR/USD '+FX.EUR_USD.toFixed(4)+' · GBP/USD '+FX.GBP_USD.toFixed(4)+' · INR/USD '+FX.INR_USD.toFixed(5);
-    document.getElementById('us-note').textContent='Live prices · '+now;
-    document.getElementById('crypto-note').textContent='Live prices via CoinGecko · '+now;
-    document.getElementById('india-note').textContent=(Object.keys(MF_NAVS).length>0?'Live NAVs via mfapi.in · ':'Broker values · ')+'INR/USD '+FX.INR_USD.toFixed(5);
-    document.getElementById('hdfc-note').textContent=(Object.keys(INDIA_STOCK_PRICES).length>0?'Live prices via NSE · ':'Prices as of Apr 4, 2026 · ')+now;
-  }catch(err){
-    setProgress(100,'Could not fetch prices',true);
-    document.getElementById('error-banner').classList.add('visible');
-    document.getElementById('last-updated').textContent='Showing last known prices · click Refresh to retry';
-  }
-  renderAll();
-  setTimeout(()=>document.getElementById('progress-section').classList.remove('visible'),2500);
-  btn.disabled=false;
-  btn.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg> Refresh prices';
-}
-loadPrices();
-</script>
+  <script>
+    const WORKER_URL='https://portfolio-prices.karnasdk.workers.dev/';
+    let PRICES={RMS:1659,ASML:1320.83,MELI:1719,UBER:73.84,HOOD:69.30,MSFT:356.90,NVDA:182.65,RDDT:141.80,PLTR:156.43,SHOP:133.50,AMZN:213.49,META:600.05,NFLX:91.87,NU:14.64,BLK:930.88,FICO:1062,MSTR:119.13,COIN:175.76,TSLA:393.09,R2US:54.39,EMAR:11.70,ENBD:26.90,FAB:18.20,ADIB:21.0,ADCB:12.68,BTC:71722.99,SHIB:0.00000606,SUI:0.9496,ADA:0.2583,AVAX:9.315,DOGE:0.09432,LTC:55.09};
+    let FX={EUR_USD:1.153,GBP_USD:1.3205,INR_USD:0.01075,AED_USD:1/3.6725};
+    let MF_NAVS={};let INDIA_STOCK_PRICES={};
+    const US_STOCKS=[{name:'Hermes',ticker:'RMS',invested:10000,avgCost:1800,currency:'EUR'},{name:'ASML',ticker:'ASML',invested:10000,avgCost:1200},{name:'Mercado Libre',ticker:'MELI',invested:10000,avgCost:1900},{name:'Uber',ticker:'UBER',invested:10000,avgCost:75},{name:'Robinhood',ticker:'HOOD',invested:10000,avgCost:72},{name:'Microsoft',ticker:'MSFT',invested:15000,avgCost:380},{name:'Nvidia',ticker:'NVDA',invested:15000,avgCost:175},{name:'Reddit',ticker:'RDDT',invested:5000,avgCost:133},{name:'Palantir',ticker:'PLTR',invested:15000,avgCost:150},{name:'Shopify',ticker:'SHOP',invested:15000,avgCost:115},{name:'Amazon',ticker:'AMZN',invested:15000,avgCost:215},{name:'Facebook (Meta)',ticker:'META',invested:15000,avgCost:600},{name:'Netflix',ticker:'NFLX',invested:15000,avgCost:90},{name:'Nubank',ticker:'NU',invested:15000,avgCost:13},{name:'Blackrock',ticker:'BLK',invested:15000,avgCost:1000},{name:'Fair Isaac Corp',ticker:'FICO',invested:15000,avgCost:1100},{name:'Strategy (MicroStrategy)',ticker:'MSTR',invested:50000,avgCost:110},{name:'Coinbase',ticker:'COIN',invested:50000,avgCost:150},{name:'Tesla',ticker:'TSLA',invested:20000,avgCost:354},{name:'SPDR Russell 2000 (UK)',ticker:'R2US',invested:80000,avgCost:47.50,currency:'GBP'}];
+    const UAE_STOCKS=[{name:'Emaar',ticker:'EMAR',invested:10000,avgCost:11,currency:'AED'},{name:'Emirates NBD Bank',ticker:'ENBD',invested:10000,avgCost:27,currency:'AED'},{name:'First Abu Dhabi Bank',ticker:'FAB',invested:10000,avgCost:17,currency:'AED'},{name:'Abu Dhabi Islamic Bank',ticker:'ADIB',invested:5000,avgCost:21,currency:'AED'},{name:'Abu Dhabi Commercial Bank',ticker:'ADCB',invested:5000,avgCost:12,currency:'AED'}];
+    const INDIA_FUNDS=[{name:'Kotak Flexicap Fund Growth',category:'Flexicap',bookINR:2630632,valueINR:3116381,mfKey:'KOTAK_FLEXICAP',_units:37841.75},{name:'HDFC Nifty 50 Index Fund',category:'Index',bookINR:4599770,valueINR:5220350,mfKey:'HDFC_NIFTY50',_units:23116.285},{name:'HSBC Nifty 50 Index Fund',category:'Index',bookINR:999950,valueINR:1226414,mfKey:'HSBC_NIFTY50',_units:44229.704},{name:'ICICI Pru Nifty Next 50',category:'Index',bookINR:5297735,valueINR:6411454,mfKey:'ICICI_NIFTYNEXT50',_units:110080.178},{name:'Nippon Large Cap Fund Growth',category:'Large Cap',bookINR:2073896,valueINR:2516485,mfKey:'NIPPON_LARGECAP',_units:28965.838},{name:'HDFC Small Cap Fund Regular',category:'Small Cap',bookINR:2324884,valueINR:2411165,mfKey:'HDFC_SMALLCAP',_units:18947.507},{name:'Kotak Small Cap Fund Growth',category:'Small Cap',bookINR:2249888,valueINR:2230368,mfKey:'KOTAK_SMALLCAP',_units:9495.456}];
+    const HDFC_HOLDINGS=[{name:'ABB India Limited',type:'Equity',qty:18,avgCost:5767.31,currentPrice:6564.00,stockKey:'ABB_INDIA'},{name:'Asian Paints Limited',type:'Equity',qty:42,avgCost:2424.19,currentPrice:2273.00,stockKey:'ASIAN_PAINTS'},{name:'Central Depository Services (CDSL)',type:'Equity',qty:76,avgCost:1333.84,currentPrice:1282.80,stockKey:'CDSL'},{name:'CG Power & Industrial Solutions',type:'Equity',qty:145,avgCost:701.27,currentPrice:725.00,stockKey:'CG_POWER'},{name:'Hindustan Aeronautics (HAL)',type:'Equity',qty:25,avgCost:4169.03,currentPrice:3899.30,stockKey:'HAL'},{name:'ICICI Pru Nifty Oil & Gas ETF',type:'ETF',qty:80040,avgCost:12.60,currentPrice:11.30,stockKey:'ICICI_OILGAS_ETF'},{name:'ICICI Pru Nifty FMCG ETF',type:'ETF',qty:17900,avgCost:56.41,currentPrice:51.32,stockKey:'ICICI_FMCG_ETF'},{name:'IRCTC',type:'Equity',qty:161,avgCost:632.84,currentPrice:535.55,stockKey:'IRCTC'},{name:'Jio Financial Services',type:'Equity',qty:400,avgCost:260.54,currentPrice:245.33,stockKey:'JIO_FINANCIAL'},{name:'Moschip Technologies',type:'Equity',qty:530,avgCost:195.62,currentPrice:175.30,stockKey:'MOSCHIP'},{name:'Motilal Oswal Nifty Realty ETF',type:'ETF',qty:11720,avgCost:86.07,currentPrice:74.62,stockKey:'MOTILAL_REALTY_ETF'},{name:'Nippon India ETF Nifty IT (ITBEES)',type:'ETF',qty:25750,avgCost:39.17,currentPrice:34.75,stockKey:'NIPPON_IT_ETF'},{name:'Waaree Energies Limited',type:'Equity',qty:36,avgCost:2897.29,currentPrice:3129.80,stockKey:'WAAREE'}];
+    const CRYPTO=[{name:'Bitcoin',ticker:'BTC',invested:500000,avgCost:69000},{name:'Shiba Inu',ticker:'SHIB',invested:4424,avgCost:0.000012046},{name:'Sui',ticker:'SUI',invested:18894,avgCost:3.354},{name:'Cardano',ticker:'ADA',invested:22290,avgCost:0.8268},{name:'Avalanche',ticker:'AVAX',invested:19693,avgCost:24.931},{name:'Dogecoin',ticker:'DOGE',invested:20791,avgCost:0.2226},{name:'Litecoin',ticker:'LTC',invested:21346,avgCost:111.61}];
+    function fmtW(n){return'$'+Math.round(n).toLocaleString('en-US');}
+    function fmtINR(n){return'₹'+Math.round(n).toLocaleString('en-IN');}
+    function fmtP(n){return'$'+n.toFixed(2).replace(/\B(==(\d{3})+(?!\d))/g,',');}
+    function fmtPct(n){return(n>=0?'+':'')+n.toFixed(2)+'%';}
+    function fmtPL(n){return(n>=0?'+$':'-$')+Math.round(Math.abs(n)).toLocaleString('en-US');}
+    function fmtPLINR(n){return(n>=0?'+₹':'-₹')+Math.round(Math.abs(n)).toLocaleString('en-IN');}
+    function toUSD(p,c){if(!c)return p;if(c==='EUR')return p*FX.EUR_USD;if(c==='GBP')return p*FX.GBP_USD;if(c==='AED')return p*FX.AED_USD;return p;}
+    function setMetric(id,val,pos,grand){const el=document.getElementById(id);if(!el)return;el.textContent=val;if(pos!==undefined)el.className=(grand?'g-value':'s-value')+' '+(pos?'pos':'neg');}
+    function buildStockRow(h){const isAED=h.currency==='AED';const fxTag=(h.currency&&!isAED)?'<span class="fx-tag">'+h.currency+'→USD</span>':'';const avgUSD=toUSD(h.avgCost,h.currency);const rawPrice=PRICES[h.ticker]||h.avgCost;const priceUSD=toUSD(rawPrice,h.currency);const qty=h.invested/avgUSD;const current=qty*priceUSD;const pl=current-h.invested;const plPct=(pl/h.invested)*100;const pos=pl>=0;const avgDisp=isAED?'AED '+h.avgCost.toFixed(2):fmtP(avgUSD);const priceDisp=isAED?'AED '+rawPrice.toFixed(2):fmtP(priceUSD);return'<tr><td><div class="r-name">'+h.name+fxTag+'</div><div class="r-sub">'+h.ticker+'</div></td><td class="price-cell">'+fmtW(h.invested)+'</td><td class="price-cell">'+avgDisp+'</td><td class="price-cell">'+priceDisp+'</td><td class="price-cell">'+fmtW(current)+'</td><td><span class="badge '+(pos?'pos':'neg')+'">'+fmtPL(pl)+'</span></td><td><span class="badge '+(pos?'pos':'neg')+'">'+fmtPct(plPct)+'</span></td></tr>';}
+    function buildIndiaRow(f){const liveINR=(MF_NAVS[f.mfKey]&&f._units)?MF_NAVS[f.mfKey]*f._units:f.valueINR;const bookUSD=f.bookINR*FX.INR_USD;const currUSD=liveINR*FX.INR_USD;const pl=currUSD-bookUSD;const plPct=(pl/bookUSD)*100;const pos=pl>=0;const navTag=MF_NAVS[f.mfKey]?' · NAV ₹'+MF_NAVS[f.mfKey].toFixed(2):'';return'<tr><td><div class="r-name">'+f.name+'</div><div class="r-sub"><span class="cat-tag">'+f.category+'</span>'+navTag+'</div></td><td class="price-cell">'+fmtINR(f.bookINR)+'</td><td class="price-cell">'+fmtW(bookUSD)+'</td><td class="price-cell">'+fmtINR(Math.round(liveINR))+'</td><td class="price-cell">'+fmtW(currUSD)+'</td><td><span class="badge '+(pos?'pos':'neg')+'">'+fmtPL(pl)+'</span></td><td><span class="badge '+(pos?'pos':'neg')+'">'+fmtPct(plPct)+'</span></td></tr>';}
+    function buildHdfcRow(h){const lp=INDIA_STOCK_PRICES[h.stockKey]||h.currentPrice;const inv=h.qty*h.avgCost;const cur=h.qty*lp;const pl=cur-inv;const plPct=(pl/inv)*100;const pos=pl>=0;const t=h.type==='ETF'?'<span class="cat-tag">ETF</span>':'';return'<tr><td><div class="r-name">'+h.name+'</div><div class="r-sub">'+t+'</div></td><td class="price-cell">'+h.qty.toLocaleString('en-IN')+'</td><td class="price-cell">'+fmtINR(h.avgCost)+'</td><td class="price-cell">'+fmtINR(lp)+'</td><td class="price-cell">'+fmtINR(inv)+'</td><td class="price-cell">'+fmtINR(cur)+'</td><td><span class="badge '+(pos?'pos':'neg')+'">'+fmtPLINR(pl)+'</span></td><td><span class="badge '+(pos?'pos':'neg')+'">'+fmtPct(plPct)+'</span></td></tr>';}
+    function calcStocks(h){let i=0,c=0;h.forEach(x=>{const a=toUSD(x.avgCost,x.currency);const p=toUSD(PRICES[x.ticker]||x.avgCost,x.currency);i+=x.invested;c+=(x.invested/a)*p;});return{inv:i,cur:c,pl:c-i,pct:(c-i)/i*100};}
+    function calcIndia(){let i=0,c=0;INDIA_FUNDS.forEach(f=>{i+=f.bookINR*FX.INR_USD;c+=((MF_NAVS[f.mfKey]&&f._units)?MF_NAVS[f.mfKey]*f._units:f.valueINR)*FX.INR_USD;});return{inv:i,cur:c,pl:c-i,pct:(c-i)/i*100};}
+    function calcHdfc(){let i=0,c=0;HDFC_HOLDINGS.forEach(h=>{const lp=INDIA_STOCK_PRICES[h.stockKey]||h.currentPrice;i+=h.qty*h.avgCost*FX.INR_USD;c+=h.qty*lp*FX.INR_USD;});return{inv:i,cur:c,pl:c-i,pct:(c-i)/i*100};}
+    function calcHdfcINR(){let i=0,c=0;HDFC_HOLDINGS.forEach(h=>{const lp=INDIA_STOCK_PRICES[h.stockKey]||h.currentPrice;i+=h.qty*h.avgCost;c+=h.qty*lp;});return{inv:i,cur:c,pl:c-i,pct:(c-i)/i*100};}
+    let _ac=null,_pc=null;
+    function renderCharts(s,u,ind,hdfc,c){
+      const labels=['US Stocks','UAE Stocks','India MF','India Demat','Crypto'];
+      const palette=['#818cf8','#fbbf24','#34d399','#f472b6','#fb923c'];
+      const actx=document.getElementById('allocationChart').getContext('2d');
+      if(_ac)_ac.destroy();
+      _ac=new Chart(actx,{type:'doughnut',data:{labels,datasets:[{data:[s.inv,u.inv,ind.inv,hdfc.inv,c.inv],backgroundColor:palette,borderWidth:2,borderColor:'rgba(8,12,20,0.8)',hoverOffset:6}]},options:{responsive:true,maintainAspectRatio:false,cutout:'64%',plugins:{legend:{position:'right',labels:{font:{size:11,family:'Inter'},boxWidth:10,padding:10,color:'#94a3b8'}},tooltip:{callbacks:{label:ctx=>{const v=ctx.raw,t=ctx.dataset.data.reduce((a,b)=>a+b,0);return'  $'+Math.round(v).toLocaleString()+' ('+(v/t*100).toFixed(1)+'%)';}}}}}});
+      const plData=[s.pl,u.pl,ind.pl,hdfc.pl,c.pl];
+      const pctx=document.getElementById('plChart').getContext('2d');
+      if(_pc)_pc.destroy();
+      _pc=new Chart(pctx,{type:'bar',data:{labels,datasets:[{data:plData,backgroundColor:plData.map(v=>v>=0?'rgba(52,211,153,0.7)':'rgba(248,113,113,0.7)'),borderColor:plData.map(v=>v>=0?'#34d399':'#f87171'),borderWidth:1.5,borderRadius:6,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>{const v=ctx.raw;return'  '+(v>=0?'+$':'-$')+Math.round(Math.abs(v)).toLocaleString();}}}},scales:{y:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{font:{size:10,family:'Inter'},color:'#475569',callback:v=>(v>=0?'$':'-$')+Math.round(Math.abs(v)/1000)+'k'}},x:{grid:{display:false},ticks:{font:{size:11,family:'Inter'},color:'#64748b'}}}}});
+    }
+    function renderAll(){
+      const s=calcStocks(US_STOCKS),u=calcStocks(UAE_STOCKS),ind=calcIndia(),hdfc=calcHdfc(),c=calcStocks(CRYPTO);
+      document.getElementById('us-tbody').innerHTML=US_STOCKS.map(buildStockRow).join('');
+      document.getElementById('uae-tbody').innerHTML=UAE_STOCKS.map(buildStockRow).join('');
+      document.getElementById('india-tbody').innerHTML=INDIA_FUNDS.map(buildIndiaRow).join('');
+      document.getElementById('hdfc-tbody').innerHTML=HDFC_HOLDINGS.map(buildHdfcRow).join('');
+      document.getElementById('crypto-tbody').innerHTML=CRYPTO.map(buildStockRow).join('');
+      document.getElementById('us-count').textContent=US_STOCKS.length+' holdings';
+      document.getElementById('uae-count').textContent=UAE_STOCKS.length+' holdings';
+      document.getElementById('india-count').textContent=INDIA_FUNDS.length+' funds';
+      document.getElementById('hdfc-count').textContent=HDFC_HOLDINGS.length+' holdings';
+      document.getElementById('crypto-count').textContent=CRYPTO.length+' holdings';
+      [['s',s],['uae',u],['india',ind],['c',c]].forEach(([id,sec])=>{setMetric(id+'-invested',fmtW(sec.inv));setMetric(id+'-value',fmtW(sec.cur));setMetric(id+'-pl',fmtPL(sec.pl),sec.pl>=0);setMetric(id+'-pct',fmtPct(sec.pct),sec.pct>=0);});
+      const h=calcHdfcINR();setMetric('hdfc-invested',fmtINR(h.inv));setMetric('hdfc-value',fmtINR(h.cur));setMetric('hdfc-pl',fmtPLINR(h.pl),h.pl>=0);setMetric('hdfc-pct',fmtPct(h.pct),h.pct>=0);
+      const gI=s.inv+u.inv+ind.inv+hdfc.inv+c.inv,gC=s.cur+u.cur+ind.cur+hdfc.cur+c.cur,gPL=gC-gI,gPct=(gPL/gI)*100;
+      setMetric('grand-invested',fmtW(gI),undefined,true);setMetric('grand-value',fmtW(gC),undefined,true);setMetric('grand-pl',fmtPL(gPL),gPL>=0,true);setMetric('grand-pct',fmtPct(gPct),gPct>=0,true);
+      renderCharts(s,u,ind,hdfc,c);
+    }
+    function setProgress(pct,msg,err){document.getElementById('progress-fill').style.width=pct+'%';document.getElementById('progress-msg').textContent=msg;document.getElementById('progress-pct').textContent=pct+'%';if(err)document.getElementById('progress-fill').classList.add('error');else document.getElementById('progress-fill').classList.remove('error');}
+    async function loadPrices(){const btn=document.getElementById('refresh-btn');btn.disabled=true;btn.textContent='Fetching…';document.getElementById('progress-section').classList.add('visible');document.getElementById('error-banner').classList.remove('visible');try{setProgress(20,'Calling price server…');const res=await fetch(WORKER_URL);setProgress(70,'Processing prices…');if(!res.ok)throw new Error('Worker error '+res.status);const data=await res.json();if(data.prices)Object.entries(data.prices).forEach(([k,v])=>{if(v>0)PRICES[k]=v;});try{const ucr=await fetch('https://query2.finance.yahoo.com/v1/test/getcrumb',{credentials:'include'});const ucrumb=(await ucr.text()).trim();if(ucrumb&&!ucrumb.startsWith('<')&&ucrumb.length<100){const usyms=encodeURIComponent('EMAAR.DU,ENBD.DU,FAB.AD,ADIB.AD,ADCB.AD');const ures=await fetch('https://query1.finance.yahoo.com/v7/finance/quote?symbols='+usyms+'&crumb='+encodeURIComponent(ucrumb),{credentials:'include'});const ud=await ures.json();const um={'EMAAR.DU':'EMAR','ENBD.DU':'ENBD','FAB.AD':'FAB','ADIB.AD':'ADIB','ADCB.AD':'ADCB'};for(const ui of(ud?.quoteResponse?.result||[])){const uk=um[ui.symbol];if(uk&&ui.regularMarketPrice>0)PRICES[uk]=ui.regularMarketPrice;}}}catch(ue){}try{const cgids='bitcoin,litecoin,dogecoin,cardano,avalanche-2,sui,shiba-inu';const cgres=await fetch('https://api.coingecko.com/api/v3/simple/price?ids='+cgids+'&vs_currencies=usd');const cgd=await cgres.json();const cgm={bitcoin:'BTC',litecoin:'LTC',dogecoin:'DOGE',cardano:'ADA','avalanche-2':'AVAX',sui:'SUI','shiba-inu':'SHIB'};Object.entries(cgm).forEach(([id,key])=>{if(cgd[id]?.usd>0)PRICES[key]=cgd[id].usd;});}catch(ce){}if(data.fx){if(data.fx.EUR_USD>0)FX.EUR_USD=data.fx.EUR_USD;if(data.fx.GBP_USD>0)FX.GBP_USD=data.fx.GBP_USD;if(data.fx.INR_USD>0)FX.INR_USD=data.fx.INR_USD;if(data.fx.AED_USD>0)FX.AED_USD=data.fx.AED_USD;}if(data.mf_navs)Object.entries(data.mf_navs).forEach(([k,v])=>{if(v>0)MF_NAVS[k]=v;});if(data.india_stocks)Object.entries(data.india_stocks).forEach(([k,v])=>{if(v>0)INDIA_STOCK_PRICES[k]=v;});setProgress(100,'All prices updated ✓');const now=new Date().toLocaleString('en-GB',{dateStyle:'medium',timeStyle:'short'});document.getElementById('last-updated').textContent='Live prices · Updated '+now+' · EUR/USD '+FX.EUR_USD.toFixed(4)+' · GBP/USD '+FX.GBP_USD.toFixed(4)+' · INR/USD '+FX.INR_USD.toFixed(5);document.getElementById('us-note').textContent='Live prices · '+now;document.getElementById('crypto-note').textContent='Live prices via CoinGecko · '+now;document.getElementById('india-note').textContent=(Object.keys(MF_NAVS).length>0?'Live NAVs via mfapi.in · ':'Broker values · ')+'INR/USD '+FX.INR_USD.toFixed(5);document.getElementById('hdfc-note').textContent=(Object.keys(INDIA_STOCK_PRICES).length>0?'Live prices via NSE · ':'Prices as of Apr 4, 2026 · ')+now;}catch(err){setProgress(100,'Could not fetch prices',true);document.getElementById('error-banner').classList.add('visible');document.getElementById('last-updated').textContent='Showing last known prices · click Refresh to retry';}renderAll();setTimeout(()=>document.getElementById('progress-section').classList.remove('visible'),2500);btn.disabled=false;btn.innerHTML='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg> Refresh prices';}
+    loadPrices();
+  </script>
 </body>
 </html>
